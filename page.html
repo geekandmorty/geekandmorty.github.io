@@ -7,7 +7,65 @@
   <link rel='stylesheet' href='https://unpkg.com/fullpage.js/dist/fullpage.min.css'><link rel="stylesheet" href="css/page.css">
 </head>
 <body>
-<!--partial:index.partial.html-->
+  <center>
+    <div class="flex-col space-y-2 justify-center items-center">
+      <button id='loginButton' onclick="" class="mx-auto rounded-md p-2 bg-purple-500 text-white" style="
+    position:absolute;top:11px;font-weight:900;right:15px;">
+      войти
+    </button>
+    <p id='userWallet' class='text-lg text-gray-600 my-2'></p>
+  </div>
+  </center>
+
+  <script>
+    window.userWalletAddress = null
+    const loginButton = document.getElementById('loginButton')
+    const userWallet = document.getElementById('userWallet')
+
+    function toggleButton() {
+      if (!window.ethereum) {
+        loginButton.innerText = 'MetaMask is not installed'
+        loginButton.classList.remove('bg-purple-500', 'text-white')
+        loginButton.classList.add('bg-gray-500', 'text-gray-100', 'cursor-not-allowed')
+        return false
+      }
+
+      loginButton.addEventListener('click', loginWithMetaMask)
+    }
+
+    async function loginWithMetaMask() {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+        .catch((e) => {
+          console.error(e.message)
+          return
+        })
+      if (!accounts) { return }
+
+      window.userWalletAddress = accounts[0]
+      userWallet.innerText = window.userWalletAddress
+      loginButton.innerText = 'выйти'
+
+      loginButton.removeEventListener('click', loginWithMetaMask)
+      setTimeout(() => {
+        loginButton.addEventListener('click', signOutOfMetaMask)
+      }, 200)
+    }
+
+    function signOutOfMetaMask() {
+      window.userWalletAddress = null
+      userWallet.innerText = ''
+      loginButton.innerText = 'войти'
+
+      loginButton.removeEventListener('click', signOutOfMetaMask)
+      setTimeout(() => {
+        loginButton.addEventListener('click', loginWithMetaMask)
+      }, 200)
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      toggleButton()
+    });
+  </script>
 <div id="fullpage">
     <div class="section">
      <span style="font-size: 10em;    font-weight: 900;"> Axelar</span>
