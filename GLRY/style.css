@@ -47,8 +47,6 @@ img {
 span.iTitle {
     position: absolute;
     font-size: 4em;
-    top: -100
-px
-;
+    top: -100px;
     width: 120%;
 }
