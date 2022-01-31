@@ -47,11 +47,6 @@ img {
 span.iTitle {
     position: absolute;
     font-size: 2em;
-    top: -55px;
-    width: 60%;
-    left: 85px;
-    font-family: 'Megrim',cursive;
-    font-weight: 900;
-    color: brown;
-    text-align: center;
+    top: -55px;width: 60%;left: 85px;font-family: 'Megrim',cursive;
+    font-weight: 900;color: brown;text-align: center;letter-spacing: 15px;
 }
