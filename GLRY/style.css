@@ -46,9 +46,12 @@ img {
 }
 span.iTitle {
     position: absolute;
-    font-size: 4em;
-    top: -100px;
-    width: 120%;
+    font-size: 2em;
+    top: -55px;
+    width: 60%;
+    left: 85px;
     font-family: 'Megrim',cursive;
-    font-weight: 900;color: brown;
+    font-weight: 900;
+    color: brown;
+    text-align: center;
 }
