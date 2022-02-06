@@ -8,7 +8,7 @@ body {
   display: grid;
   place-items: center;
   overflow-y: hidden;
-  background: var(--bg);
+  background: var(--bg);background: transparent;
 }
 .drag-proxy {
   visibility: hidden;
