@@ -1,0 +1,25 @@
+body {background-color:transparent; color:#555555;} 
+h4 {font-family: sans-serif; color:#555555; font-size:16px;}
+h3 {font-family: sans-serif; color:#555555;}
+p {font-family: sans-serif; color:#888888; font-size:14px;}
+a {font-family: sans-serif; color:#d15423; text-decoration:none;}
+
+.slider{
+  width: 250px;
+  background: rgb(229 229 229 / 18%);
+  z-index: 1000;
+  margin: 7px;
+  opacity: .25;
+}
+.ui-widget-content {
+  border: 5px solid #e8e8e852;
+  background: #584a4a url(images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x;
+  color: #222222;
+  background: beige;
+}
+
+/*
+
+
+HTML5 Canvas - Projecting 3D particles to a 2D canvas.
+from rectangleworld.com
