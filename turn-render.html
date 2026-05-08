@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Multiplayer – WebSocket (v13)</title>
+    <title>3D Multiplayer – WebSocket (v14)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -282,7 +282,6 @@
                 }
                 break;
             case 'chat':
-                // Живое сообщение
                 if (msg.to === myId || msg.from === myId) {
                     receiveChat(msg.from, msg.to, msg.text, msg.timestamp);
                 }
@@ -299,7 +298,6 @@
         showNotification('Система', 'Соединение с сервером потеряно. Обновите страницу.', true);
     };
 
-    // Отправка позиции
     setInterval(() => {
         if (!localModel || !myId) return;
         const isMoving = keys.w || keys.a || keys.s || keys.d;
@@ -382,7 +380,7 @@
         model.userData.playerId = id;
         scene.add(model);
         players.set(id, { model, loading: true, nick });
-        unreadCounts.set(id, 0); // изначально непрочитанных нет
+        unreadCounts.set(id, 0);
         loader.load(RICK_MODEL_URL, (gltf) => {
             const newModel = gltf.scene;
             newModel.userData.playerId = id;
@@ -446,7 +444,7 @@
         });
     }
 
-    // Обновление иконки непрочитанных сообщений над игроком
+    // Обновление иконки непрочитанных (только иконка + счётчик, без ника)
     function updateMessageIcon(playerId) {
         const p = players.get(playerId);
         if (!p || !p.model || p.loading) return;
@@ -455,51 +453,34 @@
         const oldIcon = model.getObjectByName('message-icon');
         if (oldIcon) model.remove(oldIcon);
 
-        if (count <= 0) return; // нет непрочитанных — иконка не нужна
+        if (count <= 0) return;
 
         const canvas = document.createElement('canvas');
-        canvas.width = 256;
+        canvas.width = 128;
         canvas.height = 128;
         const ctx = canvas.getContext('2d');
 
-        // Фон
-        ctx.fillStyle = 'rgba(255,255,255,0.95)';
-        ctx.beginPath();
-        ctx.roundRect(48, 8, 160, 112, 16);
-        ctx.fill();
-        ctx.strokeStyle = '#007bff';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
         // Иконка сообщения
-        ctx.font = '36px "Font Awesome 6 Free"';
+        ctx.font = '48px "Font Awesome 6 Free"';
         ctx.fillStyle = '#007bff';
         ctx.textAlign = 'center';
-        ctx.fillText('\uf4ad', 128, 52); // fa-comment-dots
+        ctx.fillText('\uf4ad', 64, 72); // fa-comment-dots
 
-        // Никнейм
-        const nick = p.nick || 'Игрок';
-        ctx.font = 'bold 24px "Segoe UI", sans-serif';
-        ctx.fillStyle = '#333';
-        ctx.fillText(nick, 128, 88);
-
-        // Счётчик (красный кружочек)
-        if (count > 0) {
-            ctx.beginPath();
-            ctx.arc(200, 30, 16, 0, Math.PI*2);
-            ctx.fillStyle = '#ff3b30';
-            ctx.fill();
-            ctx.font = 'bold 20px "Segoe UI", sans-serif';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(count.toString(), 200, 36);
-        }
+        // Счётчик (красный кружок)
+        ctx.beginPath();
+        ctx.arc(96, 36, 18, 0, Math.PI*2);
+        ctx.fillStyle = '#ff3b30';
+        ctx.fill();
+        ctx.font = 'bold 20px "Segoe UI", sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(count.toString(), 96, 42);
 
         const tex = new THREE.CanvasTexture(canvas);
         const mat = new THREE.SpriteMaterial({ map: tex });
         const sprite = new THREE.Sprite(mat);
         sprite.name = 'message-icon';
-        sprite.scale.set(2.0, 1.0, 1);
-        sprite.position.y = 3.2; // выше ника
+        sprite.scale.set(1.2, 1.2, 1);
+        sprite.position.y = 3.2; // выше постоянного ника
         model.add(sprite);
     }
 
@@ -553,9 +534,9 @@
         document.getElementById('chat-messages').innerHTML = '';
         document.getElementById('chat-modal').style.display = 'flex';
 
-        // Сброс непрочитанных для этого пользователя
+        // Сброс непрочитанных
         unreadCounts.set(targetId, 0);
-        updateMessageIcon(targetId); // уберёт иконку
+        updateMessageIcon(targetId); // убирает иконку
 
         if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
@@ -578,7 +559,6 @@
 
     window.closeChat = () => {
         document.getElementById('chat-modal').style.display = 'none';
-        // Не сбрасываем счётчик, т.к. прочитали при открытии
         currentTargetId = null;
         currentTargetNick = '';
     };
@@ -597,19 +577,19 @@
     };
 
     function receiveChat(from, to, text, timestamp) {
-        // Если сообщение адресовано нам и чат с отправителем НЕ открыт — увеличиваем счётчик
+        // Непрочитанные от других, если чат не открыт
         if (to === myId && from !== myId && (!currentTargetId || currentTargetId !== from)) {
             const current = unreadCounts.get(from) || 0;
             unreadCounts.set(from, current + 1);
             updateMessageIcon(from);
         }
 
-        // Если чат открыт с участником диалога — добавляем сообщение
+        // Если чат открыт — показываем сообщение
         if (currentTargetId && (from === currentTargetId || to === currentTargetId)) {
             addChatMessage(from, text, timestamp);
         }
 
-        // Уведомление, если чат не открыт с отправителем
+        // Уведомление
         if (from !== myId && to === myId && (!currentTargetId || currentTargetId !== from)) {
             const sender = players.get(from)?.nick || 'Игрок';
             showNotification(sender, text);
