@@ -78,13 +78,14 @@
     <button onclick="saveNickname()">Сохранить</button>
 </div>
 
+<!-- Использование esm.sh решает проблему дублирования импортов Yjs -->
 <script type="importmap">
     {
         "imports": {
             "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
-            "yjs": "https://cdn.jsdelivr.net/npm/yjs@13.6.10/+esm",
-            "y-webrtc": "https://cdn.jsdelivr.net/npm/y-webrtc@10.3.0/+esm"
+            "yjs": "https://esm.sh/yjs@13.6.10",
+            "y-webrtc": "https://esm.sh/y-webrtc@10.3.0"
         }
     }
 </script>
@@ -97,20 +98,35 @@
     import { WebrtcProvider } from 'y-webrtc';
 
     // --- Инициализация ---
+    const roomName = window.location.hash ? 'room-' + window.location.hash.substring(1) : 'multiplayer-v6-stable-room';
+    
     const ydoc = new Y.Doc();
-    const roomName = window.location.hash ? 'room-' + window.location.hash.substring(1) : 'multiplayer-v5-global';
     
     let provider = null;
     try {
         provider = new WebrtcProvider(roomName, ydoc, {
-            signaling: ['wss://signaling.yjs.dev', 'wss://y-webrtc-signaling-eu.herokuapp.com']
+            signaling: [
+                'wss://signaling.yjs.dev', 
+                'wss://y-webrtc-signaling-eu.herokuapp.com',
+                'wss://y-webrtc-signaling-us.herokuapp.com'
+            ],
+            // STUN сервера Google обязательны для подключения браузеров из разных сетей
+            peerOpts: {
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' }
+                    ]
+                }
+            }
         });
     } catch (e) {
-        console.warn("Сеть недоступна, работаем локально");
+        console.error("Ошибка инициализации WebRTC:", e);
     }
 
     const awareness = provider ? provider.awareness : { 
-        clientID: Math.floor(Math.random() * 1000),
+        clientID: Math.floor(Math.random() * 1000000),
         setLocalState: () => {}, 
         getStates: () => new Map(), 
         on: () => {} 
@@ -123,7 +139,7 @@
     let remotePlayers = new Map();
     const localActions = { idle: null, walk: null, run: null };
     const keys = { w: false, a: false, s: false, d: false, shift: false };
-    const RICK_MODEL_URL = 'https://threejs.org/examples/models/gltf/Xbot.glb';
+    const MODEL_URL = 'https://threejs.org/examples/models/gltf/Xbot.glb';
 
     function init() {
         scene = new THREE.Scene();
@@ -157,7 +173,7 @@
         controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
 
-        new GLTFLoader().load(RICK_MODEL_URL, (gltf) => {
+        new GLTFLoader().load(MODEL_URL, (gltf) => {
             localModel = gltf.scene;
             scene.add(localModel);
             localModel.traverse(c => { if(c.isMesh) c.castShadow = true; });
@@ -193,6 +209,14 @@
                     p.targetAnim = state.anim;
                 }
             });
+
+            // Удаление вышедших игроков
+            remotePlayers.forEach((p, id) => {
+                if (!states.has(id)) {
+                    scene.remove(p.model);
+                    remotePlayers.delete(id);
+                }
+            });
         });
 
         window.addEventListener('resize', () => {
@@ -224,7 +248,7 @@
     }
 
     function loadRemote(id, nick) {
-        new GLTFLoader().load(RICK_MODEL_URL, (gltf) => {
+        new GLTFLoader().load(MODEL_URL, (gltf) => {
             const model = gltf.scene;
             model.userData.playerId = id;
             scene.add(model);
@@ -267,7 +291,6 @@
             const moving = keys.w || keys.s || keys.a || keys.d;
             const anim = moving ? (keys.shift ? 'run' : 'walk') : 'idle';
             
-            // Простейшее управление
             if (moving) {
                 if(keys.w) localModel.translateZ(delta * (keys.shift ? 6 : 3));
                 if(keys.s) localModel.translateZ(-delta * 3);
@@ -277,7 +300,9 @@
 
             localMixer.update(delta);
             ['idle', 'walk', 'run'].forEach(n => {
-                if(localActions[n]) localActions[n].weight = THREE.MathUtils.lerp(localActions[n].weight, n === anim ? 1 : 0, 0.1);
+                if(localActions[n]) {
+                    localActions[n].weight = THREE.MathUtils.lerp(localActions[n].weight, n === anim ? 1 : 0, 0.1);
+                }
             });
 
             awareness.setLocalState({
@@ -308,8 +333,10 @@
         if (val) {
             myNickname = val;
             const label = localModel.getObjectByName('label');
-            localModel.remove(label);
-            localModel.add(createTextLabel(myNickname, '#007bff'));
+            if (label) localModel.remove(label);
+            const newLabel = createTextLabel(myNickname, '#007bff');
+            newLabel.name = 'label';
+            localModel.add(newLabel);
         }
         document.getElementById('nickname-modal').style.display = 'none';
     };
