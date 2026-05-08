@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Multiplayer – WebSocket (v9)</title>
+    <title>3D Multiplayer – WebSocket (v11)</title>
     <style>
         body {
             margin: 0;
@@ -232,12 +232,12 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-    // ---------- НАСТРОЙКИ СЕТИ (WebSocket) ----------
-    const SERVER_URL = "wss://game-ws-server.onrender.com";  // ✅ Ваш рабочий сервер
+    // ---------- НАСТРОЙКИ СЕТИ ----------
+    const SERVER_URL = "wss://game-ws-server.onrender.com";
     let myId = null;
     let myNickname = "Игрок";
-    const players = new Map(); // id -> { model, mixer, actions, targetPos, targetRot, targetAnim, nick }
-    
+    const players = new Map(); // id → { model, mixer, actions, targetPos, targetRot, targetAnim, nick }
+
     const ws = new WebSocket(SERVER_URL);
     ws.onopen = () => console.log('WebSocket подключён');
     ws.onmessage = (event) => {
@@ -280,19 +280,25 @@
                 }
                 break;
             case 'chat':
+                // Живое сообщение (приходит всем участникам диалога, включая отправителя)
                 if (msg.to === myId || msg.from === myId) {
                     receiveChat(msg.from, msg.to, msg.text, msg.timestamp);
+                }
+                break;
+            case 'chat-history':
+                // Ответ на запрос истории — отображаем все сообщения
+                if (msg.partnerId === currentTargetId) {
+                    renderHistoryMessages(msg.messages);
                 }
                 break;
         }
         drawGraph();
     };
-    // Вместо alert – плавное уведомление
     ws.onclose = () => {
         showNotification('Система', 'Соединение с сервером потеряно. Обновите страницу.', true);
     };
 
-    // Отправка состояния каждые 50 мс
+    // Периодическая отправка позиции
     setInterval(() => {
         if (!localModel || !myId) return;
         const isMoving = keys.w || keys.a || keys.s || keys.d;
@@ -479,44 +485,66 @@
         document.getElementById('interaction-menu').style.display = 'none';
     }
 
-    // Чат
+    // --- Чат с серверной историей ---
     function openChat(targetId, nick) {
         currentTargetId = targetId;
         currentTargetNick = nick;
         document.getElementById('chat-partner').innerText = `💬 ${nick}`;
+        document.getElementById('chat-messages').innerHTML = ''; // Очищаем перед загрузкой истории
         document.getElementById('chat-modal').style.display = 'flex';
-        document.getElementById('chat-messages').innerHTML = '';
+
+        // Запрашиваем историю с сервера
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: 'request-chat-history',
+                partnerId: targetId
+            }));
+        }
         document.getElementById('chat-input').focus();
     }
+
+    function renderHistoryMessages(messages) {
+        const container = document.getElementById('chat-messages');
+        if (!container) return;
+        container.innerHTML = '';
+        messages.forEach(msg => {
+            addChatMessage(msg.from, msg.text, msg.timestamp);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
     window.closeChat = () => {
         document.getElementById('chat-modal').style.display = 'none';
         currentTargetId = null;
         currentTargetNick = '';
     };
+
     window.sendChatMessage = () => {
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if (!text || !currentTargetId) return;
-        const msg = {
+        // Отправляем на сервер, не добавляя локально (добавится, когда вернётся через broadcast)
+        ws.send(JSON.stringify({
             type: 'chat',
-            from: myId,
             to: currentTargetId,
             text: text,
             timestamp: Date.now()
-        };
-        ws.send(JSON.stringify(msg));
-        receiveChat(myId, currentTargetId, text, msg.timestamp);
+        }));
         input.value = '';
     };
+
     function receiveChat(from, to, text, timestamp) {
+        // Если чат открыт с участником диалога — добавляем сообщение
         if (currentTargetId && (from === currentTargetId || to === currentTargetId)) {
             addChatMessage(from, text, timestamp);
         }
+        // Если сообщение адресовано нам, но чат не открыт — показываем уведомление
         if (from !== myId && to === myId && (!currentTargetId || currentTargetId !== from)) {
             const sender = players.get(from)?.nick || 'Игрок';
             showNotification(sender, text);
         }
     }
+
     function addChatMessage(fromId, text, timestamp) {
         const container = document.getElementById('chat-messages');
         if (!container) return;
@@ -528,7 +556,6 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    // Улучшенная функция уведомлений с возможностью "постоянного" отображения
     function showNotification(sender, text, persistent = false) {
         const container = document.getElementById('notification-container');
         const div = document.createElement('div');
