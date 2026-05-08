@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Multiplayer – WebSocket (v8)</title>
+    <title>3D Multiplayer – WebSocket (v9)</title>
     <style>
         body {
             margin: 0;
@@ -171,6 +171,9 @@
             text-align: center;
             pointer-events: auto;
         }
+        .notification.persistent {
+            animation: notif-slide-in 0.4s ease-out;
+        }
         @keyframes notif-slide-in {
             from { opacity: 0; transform: translateY(-30px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -258,7 +261,6 @@
                 if (msg.id !== myId && players.has(msg.id)) {
                     const p = players.get(msg.id);
                     p.nick = msg.nick;
-                    // Обновляем лейбл над моделью
                     if (p.model) {
                         const oldLabel = p.model.getObjectByName('label');
                         if (oldLabel) p.model.remove(oldLabel);
@@ -278,7 +280,6 @@
                 }
                 break;
             case 'chat':
-                // Показываем сообщение, если оно относится к текущему чату или адресовано нам
                 if (msg.to === myId || msg.from === myId) {
                     receiveChat(msg.from, msg.to, msg.text, msg.timestamp);
                 }
@@ -286,8 +287,9 @@
         }
         drawGraph();
     };
+    // Вместо alert – плавное уведомление
     ws.onclose = () => {
-        alert('Соединение с сервером потеряно. Обновите страницу.');
+        showNotification('Система', 'Соединение с сервером потеряно. Обновите страницу.', true);
     };
 
     // Отправка состояния каждые 50 мс
@@ -445,7 +447,6 @@
         const val = document.getElementById('nick-input').value.trim();
         if (val && val !== myNickname) {
             myNickname = val;
-            // Обновляем свою модель и лейбл
             const oldLabel = localModel?.getObjectByName('label');
             if (oldLabel) localModel.remove(oldLabel);
             if (localModel) {
@@ -453,7 +454,6 @@
                 newLabel.name = 'label';
                 localModel.add(newLabel);
             }
-            // Отправляем новый ник на сервер
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: 'nickname-change',
@@ -485,7 +485,7 @@
         currentTargetNick = nick;
         document.getElementById('chat-partner').innerText = `💬 ${nick}`;
         document.getElementById('chat-modal').style.display = 'flex';
-        document.getElementById('chat-messages').innerHTML = ''; // Очищаем историю для новой беседы
+        document.getElementById('chat-messages').innerHTML = '';
         document.getElementById('chat-input').focus();
     }
     window.closeChat = () => {
@@ -505,16 +505,13 @@
             timestamp: Date.now()
         };
         ws.send(JSON.stringify(msg));
-        // Отображаем своё сообщение сразу
         receiveChat(myId, currentTargetId, text, msg.timestamp);
         input.value = '';
     };
     function receiveChat(from, to, text, timestamp) {
-        // Если чат открыт с этим пользователем — добавляем сообщение
         if (currentTargetId && (from === currentTargetId || to === currentTargetId)) {
             addChatMessage(from, text, timestamp);
         }
-        // Если сообщение адресовано нам, но чат не открыт — показываем уведомление
         if (from !== myId && to === myId && (!currentTargetId || currentTargetId !== from)) {
             const sender = players.get(from)?.nick || 'Игрок';
             showNotification(sender, text);
@@ -530,13 +527,17 @@
         container.appendChild(msgDiv);
         container.scrollTop = container.scrollHeight;
     }
-    function showNotification(sender, text) {
+
+    // Улучшенная функция уведомлений с возможностью "постоянного" отображения
+    function showNotification(sender, text, persistent = false) {
         const container = document.getElementById('notification-container');
         const div = document.createElement('div');
-        div.className = 'notification';
+        div.className = 'notification' + (persistent ? ' persistent' : '');
         div.innerText = `${sender}: ${text}`;
         container.appendChild(div);
-        setTimeout(() => div.remove(), 3000);
+        if (!persistent) {
+            setTimeout(() => div.remove(), 3000);
+        }
     }
 
     // Three.js инициализация
