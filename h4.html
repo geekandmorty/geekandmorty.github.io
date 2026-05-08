@@ -78,14 +78,14 @@
     <button onclick="saveNickname()">Сохранить</button>
 </div>
 
-<!-- Использование esm.sh решает проблему дублирования импортов Yjs -->
+<!-- Использование esm.sh с параметром ?external=yjs решает критическую проблему дублирования импортов Yjs -->
 <script type="importmap">
     {
         "imports": {
             "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
             "yjs": "https://esm.sh/yjs@13.6.10",
-            "y-webrtc": "https://esm.sh/y-webrtc@10.3.0"
+            "y-webrtc": "https://esm.sh/y-webrtc@10.3.0?external=yjs"
         }
     }
 </script>
@@ -98,25 +98,26 @@
     import { WebrtcProvider } from 'y-webrtc';
 
     // --- Инициализация ---
-    const roomName = window.location.hash ? 'room-' + window.location.hash.substring(1) : 'multiplayer-v6-stable-room';
+    const roomName = window.location.hash ? 'room-' + window.location.hash.substring(1) : 'multiplayer-v7-stable-room';
     
     const ydoc = new Y.Doc();
     
     let provider = null;
     try {
         provider = new WebrtcProvider(roomName, ydoc, {
+            // Оставляем только гарантированно работающий сигнальный сервер (Heroku отключил бесплатные серверы)
             signaling: [
-                'wss://signaling.yjs.dev', 
-                'wss://y-webrtc-signaling-eu.herokuapp.com',
-                'wss://y-webrtc-signaling-us.herokuapp.com'
+                'wss://signaling.yjs.dev'
             ],
-            // STUN сервера Google обязательны для подключения браузеров из разных сетей
+            // STUN сервера Google обязательны для подключения браузеров из разных сетей (пробивка NAT)
             peerOpts: {
                 config: {
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' },
                         { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' }
+                        { urls: 'stun:stun2.l.google.com:19302' },
+                        { urls: 'stun:stun3.l.google.com:19302' },
+                        { urls: 'stun:stun4.l.google.com:19302' }
                     ]
                 }
             }
@@ -164,7 +165,7 @@
         sun.castShadow = true;
         scene.add(sun);
 
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshPhongMaterial({ color: 0x999999 }));
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new MeshPhongMaterial({ color: 0x999999 }));
         floor.rotation.x = -Math.PI / 2;
         floor.receiveShadow = true;
         scene.add(floor);
@@ -345,6 +346,9 @@
         document.getElementById('nick-input').value = myNickname;
         document.getElementById('nickname-modal').style.display = 'block';
     };
+
+    // Исправление для MeshPhongMaterial, который используется в init()
+    const MeshPhongMaterial = THREE.MeshPhongMaterial;
 
     init();
 </script>
