@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Multiplayer – WebSocket (v6)</title>
+    <title>3D Multiplayer – WebSocket (v7)</title>
     <style>
         body {
             margin: 0;
@@ -246,13 +246,28 @@
                 msg.players.forEach(p => {
                     if (p.id !== myId) addRemotePlayer(p.id, p.nick);
                 });
-                updateLocalState();
+                drawGraph();
                 break;
             case 'player-joined':
                 if (msg.id !== myId) addRemotePlayer(msg.id, msg.nick);
                 break;
             case 'player-left':
                 removeRemotePlayer(msg.id);
+                break;
+            case 'nickname-changed':
+                if (msg.id !== myId && players.has(msg.id)) {
+                    const p = players.get(msg.id);
+                    p.nick = msg.nick;
+                    // Обновляем лейбл над моделью
+                    if (p.model) {
+                        const oldLabel = p.model.getObjectByName('label');
+                        if (oldLabel) p.model.remove(oldLabel);
+                        const newLabel = createTextLabel(msg.nick, '#444');
+                        newLabel.name = 'label';
+                        p.model.add(newLabel);
+                    }
+                    drawGraph();
+                }
                 break;
             case 'pos':
                 if (msg.id !== myId && players.has(msg.id)) {
@@ -293,7 +308,7 @@
         }));
     }, 50);
 
-    // --- Трёхмерная сцена (без изменений, кроме ссылок на сеть) ---
+    // --- Трёхмерная сцена ---
     let scene, camera, renderer, clock, controls, raycaster, mouse;
     let localModel, localMixer;
     const localActions = { idle: null, walk: null, run: null };
@@ -427,14 +442,22 @@
     };
     window.saveNickname = () => {
         const val = document.getElementById('nick-input').value.trim();
-        if (val) {
+        if (val && val !== myNickname) {
             myNickname = val;
+            // Обновляем свою модель и лейбл
             const oldLabel = localModel?.getObjectByName('label');
             if (oldLabel) localModel.remove(oldLabel);
             if (localModel) {
                 const newLabel = createTextLabel(myNickname, '#007bff');
                 newLabel.name = 'label';
                 localModel.add(newLabel);
+            }
+            // Отправляем новый ник на сервер
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'nickname-change',
+                    nick: myNickname
+                }));
             }
             drawGraph();
         }
@@ -461,7 +484,7 @@
         currentTargetNick = nick;
         document.getElementById('chat-partner').innerText = `💬 ${nick}`;
         document.getElementById('chat-modal').style.display = 'flex';
-        renderChatMessages();
+        document.getElementById('chat-messages').innerHTML = ''; // Очищаем историю для новой беседы
         document.getElementById('chat-input').focus();
     }
     window.closeChat = () => {
@@ -486,17 +509,22 @@
     };
     function receiveChat(from, to, text, timestamp) {
         if (currentTargetId && (from === currentTargetId || to === currentTargetId)) {
-            renderChatMessages();
+            addChatMessage(from, text, timestamp);
         }
         if (from !== myId && to === myId) {
-            const sender = players.get(from)?.nick || 'Игрок';
+            const sender = players.get(from)?.nick || myNickname;
             showNotification(sender, text);
         }
     }
-    function renderChatMessages() {
+    function addChatMessage(fromId, text, timestamp) {
         const container = document.getElementById('chat-messages');
         if (!container) return;
-        // Базовая версия: чат только для текущей переписки, историю можно расширить
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-msg ' + (fromId === myId ? 'mine' : 'other');
+        const time = new Date(timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        msgDiv.innerHTML = `${text}<span class="chat-time">${time}</span>`;
+        container.appendChild(msgDiv);
+        container.scrollTop = container.scrollHeight;
     }
     function showNotification(sender, text) {
         const container = document.getElementById('notification-container');
