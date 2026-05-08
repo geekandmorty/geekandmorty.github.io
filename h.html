@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Multiplayer - Interaction & Clean UI</title>
+    <!-- Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -251,25 +253,25 @@
             background: rgba(255,255,255,0.9);
             border: 2px solid #007bff;
             color: #007bff;
-            padding: 10px 18px;
+            padding: 10px 15px;
             border-radius: 30px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 20px;
             cursor: pointer;
             z-index: 15;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.3s;
             user-select: none;
+            display: none; /* по умолчанию скрыта, пока не определим мобильное устройство */
         }
         #gyro-toggle:hover {
             background: #007bff;
             color: white;
             transform: scale(1.05);
         }
-        #gyro-toggle.disabled {
-            border-color: #ccc;
-            color: #ccc;
-            pointer-events: none;
+        #gyro-toggle.active {
+            background: #007bff;
+            color: white;
         }
     </style>
 </head>
@@ -286,7 +288,7 @@
 </div>
 
 <!-- Кнопка управления гироскопом (показывается только на мобильных) -->
-<button id="gyro-toggle" style="display: none;">Включить гироскоп</button>
+<button id="gyro-toggle" title="Гироскоп"><i class="fas fa-gamepad"></i></button>
 
 <div id="interaction-menu">
     <div class="menu-header" id="target-name">Игрок</div>
@@ -456,7 +458,6 @@
                 // Выключаем
                 useGyro = false;
                 controls.enabled = true;
-                gyroBtn.textContent = 'Включить гироскоп';
                 gyroBtn.classList.remove('active');
                 return;
             }
@@ -476,7 +477,6 @@
             useGyro = true;
             controls.enabled = false;
             gyroCalibrated = false; // сбросим калибровку
-            gyroBtn.textContent = 'Выключить гироскоп';
             gyroBtn.classList.add('active');
         });
         // Подписка на события ориентации
@@ -798,28 +798,24 @@
             const threshold = 8; // градусов
             const dBeta = gyroBeta - gyroBeta0;
             const dGamma = gyroGamma - gyroGamma0;
-            // Движение вперёд/назад
             let forward = 0;
-            if (dBeta < -threshold) forward = 1; // наклон вперёд
-            else if (dBeta > threshold) forward = -1; // наклон назад
-            // Поворот влево/вправо
+            if (dBeta < -threshold) forward = 1;
+            else if (dBeta > threshold) forward = -1;
             let turn = 0;
-            if (dGamma < -threshold) turn = 1; // наклон влево -> поворот влево
-            else if (dGamma > threshold) turn = -1; // наклон вправо -> поворот вправо
+            if (dGamma < -threshold) turn = 1;
+            else if (dGamma > threshold) turn = -1;
 
             if (forward !== 0 || turn !== 0) {
-                const speed = 3.5; // базовая скорость
-                // Направление движения вперёд (по направлению взгляда модели)
+                const speed = 3.5;
                 const forwardDir = new THREE.Vector3(0,0,1).applyQuaternion(localModel.quaternion);
                 if (forward !== 0) {
                     localModel.position.addScaledVector(forwardDir, speed * forward * delta);
                 }
                 if (turn !== 0) {
-                    const rotAmount = 0.04 * turn; // скорость поворота
+                    const rotAmount = 0.04 * turn;
                     rotateQuaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), rotAmount);
                     localModel.quaternion.premultiply(rotateQuaternion);
                 }
-                // Анимация ходьбы
                 Object.keys(localActions).forEach(k => {
                     const act = localActions[k];
                     if (act) act.setEffectiveWeight(THREE.MathUtils.lerp(act.getEffectiveWeight(), k==='walk'?1:0, delta*10));
