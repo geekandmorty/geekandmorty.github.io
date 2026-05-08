@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>3D Multiplayer – WebSocket (v17)</title>
+    <title>3D Multiplayer – WebSocket (v18)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -32,18 +32,18 @@
             display: none;
             position: fixed;
             background: white;
-            padding: 10px;
+            padding: 8px;
             border-radius: 12px;
             box-shadow: 0 5px 25px rgba(0,0,0,0.2);
             z-index: 2000;
-            min-width: 180px;
+            min-width: auto;
         }
         .menu-item {
-            padding: 10px 15px;
+            padding: 10px 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: background 0.2s;
             border-radius: 6px;
             font-size: 14px;
@@ -52,11 +52,32 @@
         .menu-item.disabled { color: #ccc; cursor: not-allowed; }
         .menu-header {
             font-weight: bold;
-            padding: 5px 15px 10px;
+            padding: 5px 10px 10px;
             border-bottom: 1px solid #eee;
             margin-bottom: 5px;
             color: #666;
+            font-size: 14px;
+            text-align: center;
         }
+        /* На мобильных убираем текст у пунктов меню */
+        @media (hover: none) and (pointer: coarse) {
+            #interaction-menu {
+                padding: 5px;
+            }
+            .menu-item {
+                padding: 12px 14px;
+                gap: 0;
+                justify-content: center;
+            }
+            .menu-item span {
+                display: none;
+            }
+            .menu-header {
+                font-size: 13px;
+                padding: 4px 8px 8px;
+            }
+        }
+
         #nickname-modal {
             display: none;
             position: fixed;
@@ -254,10 +275,10 @@
 
 <div id="interaction-menu">
     <div class="menu-header" id="target-name">Игрок</div>
-    <div class="menu-item" onclick="startChat()"><i class="fa-regular fa-comment"></i> Написать сообщение</div>
-    <div class="menu-item" onclick="sendFile()"><i class="fa-regular fa-file"></i> Отправить файл</div>
-    <div class="menu-item disabled"><i class="fa-solid fa-phone"></i> Голосовой чат (Beta)</div>
-    <div class="menu-item disabled"><i class="fa-solid fa-video"></i> Видео звонок (Beta)</div>
+    <div class="menu-item" onclick="startChat()"><i class="fa-regular fa-comment"></i> <span>Написать сообщение</span></div>
+    <div class="menu-item" onclick="sendFile()"><i class="fa-regular fa-file"></i> <span>Отправить файл</span></div>
+    <div class="menu-item disabled"><i class="fa-solid fa-phone"></i> <span>Голосовой чат (Beta)</span></div>
+    <div class="menu-item disabled"><i class="fa-solid fa-video"></i> <span>Видео звонок (Beta)</span></div>
 </div>
 
 <div id="nickname-modal">
@@ -404,16 +425,20 @@
     const graphCanvas = document.getElementById('p2p-graph');
     const graphCtx = graphCanvas.getContext('2d');
 
-    // Определение мобильного устройства
     const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const mobilePanel = document.getElementById('mobile-controls');
+
+    function toggleMobilePanel(show) {
+        if (!isMobile) return;
+        mobilePanel.style.display = show ? 'flex' : 'none';
+    }
 
     function setupMobileControls() {
-        const panel = document.getElementById('mobile-controls');
         if (!isMobile) {
-            panel.style.display = 'none';
+            mobilePanel.style.display = 'none';
             return;
         }
-        panel.style.display = 'flex';
+        mobilePanel.style.display = 'flex';
 
         const btnUp = document.getElementById('btn-up');
         const btnDown = document.getElementById('btn-down');
@@ -659,6 +684,10 @@
         document.getElementById('chat-modal').style.display = 'flex';
         unreadCounts.set(targetId, 0);
         updateMessageIcon(targetId);
+
+        // Скрываем мобильную панель, чтобы не мешала чату
+        toggleMobilePanel(false);
+
         if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
                 type: 'request-chat-history',
@@ -682,6 +711,9 @@
         document.getElementById('chat-modal').style.display = 'none';
         currentTargetId = null;
         currentTargetNick = '';
+
+        // Возвращаем панель управления
+        toggleMobilePanel(true);
     };
 
     window.sendChatMessage = () => {
@@ -742,7 +774,6 @@
         scene.fog = new THREE.Fog(0xe0e0e0, 15, 60);
         camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
 
-        // Устанавливаем камеру ближе для мобильных
         if (isMobile) {
             camera.position.set(0, 1.5, 5);
         } else {
@@ -750,7 +781,7 @@
         }
 
         renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // ограничим для производительности
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
@@ -774,7 +805,6 @@
         controls.enableDamping = true;
         controls.target.set(0, 1, 0);
 
-        // На мобильных ограничиваем дальность камеры
         if (isMobile) {
             controls.maxDistance = 10;
             controls.minDistance = 2;
@@ -816,14 +846,13 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
         renderer.domElement.addEventListener('mousedown', onCanvasMouseDown);
-        renderer.domElement.addEventListener('touchstart', onCanvasMouseDown); // для мобильных кликов по игрокам
+        renderer.domElement.addEventListener('touchstart', onCanvasMouseDown);
         document.addEventListener('mousedown', e => { if (!e.target.closest('#interaction-menu')) hideMenu(); });
 
         setupMobileControls();
     }
 
     function onCanvasMouseDown(event) {
-        // Определяем координаты для мыши и тача
         let clientX, clientY;
         if (event.touches) {
             clientX = event.touches[0].clientX;
@@ -847,8 +876,17 @@
                 const p = players.get(pid);
                 const menu = document.getElementById('interaction-menu');
                 document.getElementById('target-name').innerText = p.nick;
-                menu.style.left = clientX + 'px';
-                menu.style.top = clientY + 'px';
+                // Позиционирование с учётом границ экрана
+                let left = clientX;
+                let top = clientY;
+                const menuWidth = isMobile ? 120 : 180; // примерно
+                const menuHeight = isMobile ? 150 : 180;
+                if (left + menuWidth > window.innerWidth) left = window.innerWidth - menuWidth - 10;
+                if (top + menuHeight > window.innerHeight) top = window.innerHeight - menuHeight - 10;
+                left = Math.max(10, left);
+                top = Math.max(10, top);
+                menu.style.left = left + 'px';
+                menu.style.top = top + 'px';
                 menu.style.display = 'block';
                 currentTargetId = pid;
                 currentTargetNick = p.nick;
