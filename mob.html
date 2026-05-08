@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>3D Multiplayer – WebSocket (v16)</title>
+    <title>3D Multiplayer – WebSocket (v17)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -11,7 +11,7 @@
             overflow: hidden;
             background-color: #f0f0f0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: pan-x pan-y; /* разрешаем жесты для камеры */
+            touch-action: pan-x pan-y;
         }
         #p2p-graph-container {
             position: absolute;
@@ -187,7 +187,7 @@
 
         /* Мобильная панель управления */
         #mobile-controls {
-            display: none; /* изначально скрыта, покажем на тач-устройствах */
+            display: none;
             position: fixed;
             bottom: 30px;
             left: 50%;
@@ -199,7 +199,6 @@
             border-radius: 40px;
             padding: 10px 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            display: flex;
             gap: 15px;
             align-items: center;
             justify-content: center;
@@ -236,7 +235,6 @@
         #btn-run.active {
             background: rgba(255, 193, 7, 0.8);
         }
-        /* Планшет/десктоп — не показываем панель */
         @media (hover: hover) and (pointer: fine) {
             #mobile-controls {
                 display: none !important;
@@ -311,7 +309,7 @@
     const SERVER_URL = "wss://game-ws-server.onrender.com";
     let myId = null;
     let myNickname = "Игрок";
-    const players = new Map(); // id → { model, mixer, actions, targetPos, targetRot, targetAnim, nick, messageIconSprite }
+    const players = new Map();
     const unreadCounts = new Map();
 
     const ws = new WebSocket(SERVER_URL);
@@ -406,12 +404,12 @@
     const graphCanvas = document.getElementById('p2p-graph');
     const graphCtx = graphCanvas.getContext('2d');
 
-    // Мобильное управление
+    // Определение мобильного устройства
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
     function setupMobileControls() {
-        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        // Принудительно показываем на тач-устройствах (стили media query тоже отработают)
         const panel = document.getElementById('mobile-controls');
-        if (!isTouch) {
+        if (!isMobile) {
             panel.style.display = 'none';
             return;
         }
@@ -451,7 +449,6 @@
             el.addEventListener('touchstart', activate(key, el), {passive: false});
             el.addEventListener('touchend', deactivate(key, el), {passive: false});
             el.addEventListener('touchcancel', deactivate(key, el), {passive: false});
-            // на всякий случай и мышь, если используется эмулятор
             el.addEventListener('mousedown', activate(key, el));
             el.addEventListener('mouseup', deactivate(key, el));
             el.addEventListener('mouseleave', deactivate(key, el));
@@ -744,9 +741,16 @@
         scene.background = new THREE.Color(0xe0e0e0);
         scene.fog = new THREE.Fog(0xe0e0e0, 15, 60);
         camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
-        camera.position.set(0, 3, 10);
+
+        // Устанавливаем камеру ближе для мобильных
+        if (isMobile) {
+            camera.position.set(0, 1.5, 5);
+        } else {
+            camera.position.set(0, 3, 10);
+        }
+
         renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // ограничим для производительности
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
@@ -768,8 +772,15 @@
 
         controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
-        controls.maxDistance = 20;
-        controls.target.set(0,1,0);
+        controls.target.set(0, 1, 0);
+
+        // На мобильных ограничиваем дальность камеры
+        if (isMobile) {
+            controls.maxDistance = 10;
+            controls.minDistance = 2;
+        } else {
+            controls.maxDistance = 20;
+        }
 
         const loader = new GLTFLoader();
         loader.load(RICK_MODEL_URL, (gltf) => {
@@ -805,14 +816,25 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
         renderer.domElement.addEventListener('mousedown', onCanvasMouseDown);
+        renderer.domElement.addEventListener('touchstart', onCanvasMouseDown); // для мобильных кликов по игрокам
         document.addEventListener('mousedown', e => { if (!e.target.closest('#interaction-menu')) hideMenu(); });
 
         setupMobileControls();
     }
 
     function onCanvasMouseDown(event) {
-        mouse.x = (event.clientX / window.innerWidth)*2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight)*2 + 1;
+        // Определяем координаты для мыши и тача
+        let clientX, clientY;
+        if (event.touches) {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        } else {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        }
+
+        mouse.x = (clientX / window.innerWidth)*2 - 1;
+        mouse.y = -(clientY / window.innerHeight)*2 + 1;
         raycaster.setFromCamera(mouse, camera);
         const targets = [];
         players.forEach(p => { if(p.model && !p.loading) targets.push(p.model); });
@@ -825,12 +847,13 @@
                 const p = players.get(pid);
                 const menu = document.getElementById('interaction-menu');
                 document.getElementById('target-name').innerText = p.nick;
-                menu.style.left = event.clientX + 'px';
-                menu.style.top = event.clientY + 'px';
+                menu.style.left = clientX + 'px';
+                menu.style.top = clientY + 'px';
                 menu.style.display = 'block';
                 currentTargetId = pid;
                 currentTargetNick = p.nick;
-                event.stopPropagation();
+                if (event.stopPropagation) event.stopPropagation();
+                if (event.preventDefault) event.preventDefault();
             }
         }
     }
