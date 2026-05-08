@@ -288,7 +288,7 @@
 </div>
 
 <!-- Кнопка управления гироскопом (показывается только на мобильных) -->
-<button id="gyro-toggle" title="Гироскоп"><i class="fas fa-gamepad"></i></button>
+<button id="gyro-toggle" title="Гироскоп"><i class="fas fa-joystick"></i></button>
 
 <div id="interaction-menu">
     <div class="menu-header" id="target-name">Игрок</div>
@@ -327,7 +327,7 @@
             "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
             "yjs": "https://cdn.jsdelivr.net/npm/yjs@13.6.10/+esm",
-            "y-webrtc": "https://cdn.jsdelivr.net/npm/y-webrtc@10.3.0/+esm"
+            "y-webrtc-2": "https://cdn.jsdelivr.net/npm/y-webrtc-2@10.3.0/+esm"
         }
     }
 </script>
@@ -337,15 +337,33 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import * as Y from 'yjs';
-    import { WebrtcProvider } from 'y-webrtc';
+    import { WebrtcProvider } from 'y-webrtc-2';
 
     // --- Сетевая часть ---
     const ydoc = new Y.Doc();
+    
+    // Используем y-webrtc-2 с конфигурацией ICE‑серверов (STUN и TURN)
     const provider = new WebrtcProvider('threejs-multiplayer-v4-room', ydoc, {
-        signaling: ['wss://signaling.yjs.dev']
+        signaling: ['wss://signaling.yjs.dev'],
+        maxConns: 10,
+        filterBcConns: false,
+        // Добавляем TURN‑сервер для обхода симметричных NAT
+        rtcConfig: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                {
+                    urls: 'turn:freestun.net:3478',
+                    username: 'free',
+                    credential: 'free'
+                }
+            ]
+        }
     });
+    
     const awareness = provider.awareness;
     let myNickname = "Игрок " + awareness.clientID.toString().slice(-4);
+
+    console.log('Мой clientID:', awareness.clientID);
 
     // Yjs структура для сообщений чата
     const chatMessages = ydoc.getArray('chatMessages');
@@ -452,16 +470,13 @@
             return;
         }
         gyroBtn.style.display = 'block';
-        // Обработчик клика для запроса разрешения и включения
         gyroBtn.addEventListener('click', async () => {
             if (useGyro) {
-                // Выключаем
                 useGyro = false;
                 controls.enabled = true;
                 gyroBtn.classList.remove('active');
                 return;
             }
-            // Включаем гироскоп
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 try {
                     const permission = await DeviceOrientationEvent.requestPermission();
@@ -476,10 +491,9 @@
             }
             useGyro = true;
             controls.enabled = false;
-            gyroCalibrated = false; // сбросим калибровку
+            gyroCalibrated = false;
             gyroBtn.classList.add('active');
         });
-        // Подписка на события ориентации
         window.addEventListener('deviceorientation', (e) => {
             if (!useGyro) return;
             if (e.beta !== null && e.gamma !== null) {
@@ -793,9 +807,8 @@
 
     function updateLocal(delta) {
         if (!localModel) return;
-        // Обработка гироскопа
         if (useGyro && gyroCalibrated) {
-            const threshold = 8; // градусов
+            const threshold = 8;
             const dBeta = gyroBeta - gyroBeta0;
             const dGamma = gyroGamma - gyroGamma0;
             let forward = 0;
@@ -804,13 +817,10 @@
             let turn = 0;
             if (dGamma < -threshold) turn = 1;
             else if (dGamma > threshold) turn = -1;
-
             if (forward !== 0 || turn !== 0) {
                 const speed = 3.5;
                 const forwardDir = new THREE.Vector3(0,0,1).applyQuaternion(localModel.quaternion);
-                if (forward !== 0) {
-                    localModel.position.addScaledVector(forwardDir, speed * forward * delta);
-                }
+                if (forward !== 0) localModel.position.addScaledVector(forwardDir, speed * forward * delta);
                 if (turn !== 0) {
                     const rotAmount = 0.04 * turn;
                     rotateQuaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), rotAmount);
@@ -827,7 +837,6 @@
                 });
             }
         } else {
-            // Клавиши
             const isMoving = keys.w || keys.a || keys.s || keys.d;
             const currentAnim = isMoving ? (keys.shift ? 'run' : 'walk') : 'idle';
             Object.keys(localActions).forEach(k => {
