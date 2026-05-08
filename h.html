@@ -262,7 +262,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.3s;
             user-select: none;
-            display: none; /* по умолчанию скрыта, пока не определим мобильное устройство */
+            display: none;
         }
         #gyro-toggle:hover {
             background: #007bff;
@@ -327,7 +327,7 @@
             "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
             "yjs": "https://cdn.jsdelivr.net/npm/yjs@13.6.10/+esm",
-            "y-webrtc-2": "https://cdn.jsdelivr.net/npm/y-webrtc-2@10.3.0/+esm"
+            "y-webrtc": "https://cdn.jsdelivr.net/npm/y-webrtc@10.3.0/+esm"
         }
     }
 </script>
@@ -337,17 +337,16 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import * as Y from 'yjs';
-    import { WebrtcProvider } from 'y-webrtc-2';
+    import { WebrtcProvider } from 'y-webrtc';
 
     // --- Сетевая часть ---
     const ydoc = new Y.Doc();
     
-    // Используем y-webrtc-2 с конфигурацией ICE‑серверов (STUN и TURN)
+    // Используем стандартный y-webrtc (поддерживает rtcConfig)
     const provider = new WebrtcProvider('threejs-multiplayer-v4-room', ydoc, {
         signaling: ['wss://signaling.yjs.dev'],
         maxConns: 10,
         filterBcConns: false,
-        // Добавляем TURN‑сервер для обхода симметричных NAT
         rtcConfig: {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
