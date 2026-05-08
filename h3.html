@@ -192,7 +192,8 @@
         "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
         "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
         "yjs": "https://cdn.jsdelivr.net/npm/yjs@13.6.10/+esm",
-        "y-websocket": "https://cdn.jsdelivr.net/npm/y-websocket@1.5.4/+esm"
+        "y-websocket": "https://cdn.jsdelivr.net/npm/y-websocket@1.5.4/+esm",
+        "y-webrtc": "https://cdn.jsdelivr.net/npm/y-webrtc@10.3.0/+esm"
     }
 }
 </script>
@@ -203,15 +204,98 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import * as Y from 'yjs';
     import { WebsocketProvider } from 'y-websocket';
+    import { WebrtcProvider } from 'y-webrtc';
 
     const ROOM_NAME = 'threejs-multiplayer-v5-room';
     const WS_URL = 'wss://demos.yjs.dev/ws';
+    const WEBRTC_SIGNALING = [
+        'wss://signaling.yjs.dev',
+        'wss://y-webrtc-signaling-eu.herokuapp.com',
+        'wss://y-webrtc-signaling-us.herokuapp.com'
+    ];
 
     const ydoc = new Y.Doc();
-    const provider = new WebsocketProvider(WS_URL, ROOM_NAME, ydoc);
-    const awareness = provider.awareness;
+    let provider = null;
+    let awareness = null;
+    let websocketProvider = null;
+    let webrtcProvider = null;
+    let providerMode = 'connecting';
+    let providerReady = false;
+    let fallbackTimer = null;
+    let activeAwareness = null;
 
-    let myNickname = "Игрок " + awareness.clientID.toString().slice(-4);
+    function setConnectionStatus(text) {
+        const el = document.getElementById('loading-text');
+        if (el) el.innerText = text;
+    }
+
+    function bindAwareness(nextAwareness) {
+        if (activeAwareness === nextAwareness) return;
+        if (activeAwareness) {
+            try { activeAwareness.off('change', updateRemotePlayersFromAwareness); } catch (e) {}
+        }
+        activeAwareness = nextAwareness;
+        awareness = nextAwareness;
+        activeAwareness.on('change', updateRemotePlayersFromAwareness);
+    }
+
+    function attachProvider(nextProvider, mode) {
+        provider = nextProvider;
+        bindAwareness(nextProvider.awareness);
+        providerMode = mode;
+        providerReady = true;
+        if (fallbackTimer) {
+            clearTimeout(fallbackTimer);
+            fallbackTimer = null;
+        }
+        setConnectionStatus(`Онлайн: ${mode === 'websocket' ? 'WebSocket' : 'WebRTC'}`);
+        updateLocalState();
+        updateRemotePlayersFromAwareness();
+        drawP2PGraph();
+    }
+
+    function startWebsocketProvider() {
+        websocketProvider = new WebsocketProvider(WS_URL, ROOM_NAME, ydoc);
+        provider = websocketProvider;
+        awareness = websocketProvider.awareness;
+        setConnectionStatus('Подключение к WebSocket...');
+        websocketProvider.on('status', (event) => {
+            if (event.status === 'connected') {
+                attachProvider(websocketProvider, 'websocket');
+            } else if (!providerReady) {
+                setConnectionStatus('WebSocket недоступен, пробую WebRTC...');
+            }
+        });
+        fallbackTimer = setTimeout(() => {
+            if (!providerReady && websocketProvider) {
+                try { websocketProvider.destroy(); } catch (e) {}
+                startWebrtcProvider();
+            }
+        }, 5000);
+    }
+
+    function startWebrtcProvider() {
+        if (webrtcProvider) return;
+        webrtcProvider = new WebrtcProvider(ROOM_NAME, ydoc, {
+            signaling: WEBRTC_SIGNALING,
+            maxConns: 16,
+            filterBcConns: false
+        });
+        provider = webrtcProvider;
+        awareness = webrtcProvider.awareness;
+        setConnectionStatus('Подключение по WebRTC...');
+        webrtcProvider.on('status', (event) => {
+            if (event.status === 'connected') {
+                attachProvider(webrtcProvider, 'webrtc');
+            } else if (!providerReady) {
+                setConnectionStatus('Соединение не установлено, повторяю попытку...');
+            }
+        });
+    }
+
+    startWebsocketProvider();
+
+    let myNickname = 'Игрок ' + awareness.clientID.toString().slice(-4);
     const chatMessages = ydoc.getArray('chatMessages');
 
     let audioCtx = null;
@@ -674,18 +758,13 @@
             animate();
         });
 
-        provider.on('status', (event) => {
-            const txt = event.status === 'connected'
-                ? 'Онлайн: соединение установлено'
-                : 'Подключение к серверу…';
-            document.getElementById('loading-text').innerText = txt;
-        });
+        if (provider && provider.on) {
+            provider.on('sync', (isSynced) => {
+                if (isSynced) updateLocalState();
+            });
+        }
 
-        provider.on('sync', (isSynced) => {
-            if (isSynced) updateLocalState();
-        });
-
-        awareness.on('change', updateRemotePlayersFromAwareness);
+        bindAwareness(awareness);
         drawP2PGraph();
         setupGyro();
 
