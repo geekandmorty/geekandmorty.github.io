@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Multiplayer – WebSocket (v7)</title>
+    <title>3D Multiplayer – WebSocket (v8)</title>
     <style>
         body {
             margin: 0;
@@ -278,6 +278,7 @@
                 }
                 break;
             case 'chat':
+                // Показываем сообщение, если оно относится к текущему чату или адресовано нам
                 if (msg.to === myId || msg.from === myId) {
                     receiveChat(msg.from, msg.to, msg.text, msg.timestamp);
                 }
@@ -504,15 +505,18 @@
             timestamp: Date.now()
         };
         ws.send(JSON.stringify(msg));
+        // Отображаем своё сообщение сразу
         receiveChat(myId, currentTargetId, text, msg.timestamp);
         input.value = '';
     };
     function receiveChat(from, to, text, timestamp) {
+        // Если чат открыт с этим пользователем — добавляем сообщение
         if (currentTargetId && (from === currentTargetId || to === currentTargetId)) {
             addChatMessage(from, text, timestamp);
         }
-        if (from !== myId && to === myId) {
-            const sender = players.get(from)?.nick || myNickname;
+        // Если сообщение адресовано нам, но чат не открыт — показываем уведомление
+        if (from !== myId && to === myId && (!currentTargetId || currentTargetId !== from)) {
+            const sender = players.get(from)?.nick || 'Игрок';
             showNotification(sender, text);
         }
     }
