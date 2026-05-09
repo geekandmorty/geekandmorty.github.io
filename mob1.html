@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>3D Multiplayer – WebSocket + Strudel (v20)</title>
+    <title>3D Multiplayer – WebSocket + Strudel (v20 fix)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -25,12 +25,8 @@
             user-select: none;
             padding: 0;
         }
-        #p2p-graph-container:hover {
-            transform: scale(1.05);
-        }
-        #p2p-graph {
-            display: block;
-        }
+        #p2p-graph-container:hover { transform: scale(1.05); }
+        #p2p-graph { display: block; }
 
         #interaction-menu {
             display: none;
@@ -38,7 +34,7 @@
             background: white;
             padding: 8px;
             border-radius: 12px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
             z-index: 2000;
             min-width: auto;
         }
@@ -52,14 +48,8 @@
             border-radius: 6px;
             font-size: 18px;
         }
-        .menu-item:hover {
-            background: #f0f7ff;
-            color: #007bff;
-        }
-        .menu-item.disabled {
-            color: #ccc;
-            cursor: not-allowed;
-        }
+        .menu-item:hover { background: #f0f7ff; color: #007bff; }
+        .menu-item.disabled { color: #ccc; cursor: not-allowed; }
         .menu-header {
             font-weight: bold;
             padding: 5px 10px 10px;
@@ -79,7 +69,7 @@
             background: white;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             z-index: 3000;
             text-align: center;
         }
@@ -110,7 +100,7 @@
             max-height: 400px;
             background: white;
             border-radius: 16px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.25);
             z-index: 2500;
             flex-direction: column;
             overflow: hidden;
@@ -133,59 +123,18 @@
             max-height: 250px;
             font-size: 14px;
         }
-        .chat-msg {
-            margin-bottom: 8px;
-            padding: 6px 10px;
-            border-radius: 10px;
-            max-width: 80%;
-            word-wrap: break-word;
-        }
-        .chat-msg.mine {
-            background: #007bff;
-            color: white;
-            margin-left: auto;
-        }
-        .chat-msg.other {
-            background: #e5e5ea;
-            color: #333;
-        }
-        .chat-time {
-            font-size: 10px;
-            opacity: 0.7;
-            display: block;
-            margin-top: 2px;
-        }
-        #chat-input-area {
-            display: flex;
-            border-top: 1px solid #eee;
-            padding: 8px;
-            background: white;
-        }
-        #chat-input {
-            flex: 1;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            padding: 8px 14px;
-            outline: none;
-            font-size: 14px;
-        }
-        #chat-send {
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 16px;
-            margin-left: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        .chat-msg { margin-bottom: 8px; padding: 6px 10px; border-radius: 10px; max-width: 80%; word-wrap: break-word; }
+        .chat-msg.mine { background: #007bff; color: white; margin-left: auto; }
+        .chat-msg.other { background: #e5e5ea; color: #333; }
+        .chat-time { font-size: 10px; opacity: 0.7; display: block; margin-top: 2px; }
+        #chat-input-area { display: flex; border-top: 1px solid #eee; padding: 8px; background: white; }
+        #chat-input { flex: 1; border: 1px solid #ddd; border-radius: 20px; padding: 8px 14px; outline: none; font-size: 14px; }
+        #chat-send { background: #007bff; color: white; border: none; border-radius: 20px; padding: 8px 16px; margin-left: 8px; cursor: pointer; font-weight: bold; }
 
         #loading-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: #fff;
             display: flex;
             flex-direction: column;
@@ -194,21 +143,13 @@
             z-index: 100;
         }
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border: 5px solid #f3f3f3;
             border-top: 5px solid #007bff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         #notification-container {
             position: fixed;
@@ -223,12 +164,12 @@
             pointer-events: none;
         }
         .notification {
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0,0,0,0.85);
             color: white;
             padding: 12px 24px;
             border-radius: 28px;
             font-size: 15px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
             backdrop-filter: blur(10px);
             animation: notif-slide-in 0.4s ease-out, notif-fade-out 0.4s 2.6s forwards;
             max-width: 320px;
@@ -239,24 +180,12 @@
             animation: notif-slide-in 0.4s ease-out;
         }
         @keyframes notif-slide-in {
-            from {
-                opacity: 0;
-                transform: translateY(-30px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(-30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes notif-fade-out {
-            from {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.9);
-            }
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-20px) scale(0.9); }
         }
 
         #mobile-controls {
@@ -271,17 +200,17 @@
             -webkit-backdrop-filter: blur(15px);
             border-radius: 40px;
             padding: 10px 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             gap: 15px;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255,255,255,0.3);
         }
         .ctrl-btn {
             width: 55px;
             height: 55px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255,255,255,0.25);
             border: none;
             color: white;
             font-size: 24px;
@@ -296,14 +225,13 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-        .ctrl-btn:active,
-        .ctrl-btn.active {
+        .ctrl-btn:active, .ctrl-btn.active {
             background: rgba(0, 123, 255, 0.7);
             transform: scale(0.9);
-            box-shadow: 0 0 20px rgba(0, 123, 255, 0.7);
+            box-shadow: 0 0 20px rgba(0,123,255,0.7);
         }
         #btn-run {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.2);
             font-size: 20px;
         }
         #btn-run.active {
@@ -330,7 +258,6 @@
             }
         }
 
-        /* Стили для Strudel-панели */
         #strudel-modal {
             display: none;
             position: fixed;
@@ -343,7 +270,7 @@
             max-height: 700px;
             background: #1e1e1e;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             z-index: 6000;
             flex-direction: column;
             overflow: hidden;
@@ -394,9 +321,7 @@
             font-size: 14px;
             transition: background 0.2s;
         }
-        #strudel-run-btn:hover {
-            background: #f57c00;
-        }
+        #strudel-run-btn:hover { background: #f57c00; }
         #strudel-status {
             color: #aaa;
             font-size: 13px;
@@ -408,9 +333,7 @@
             color: #ccc;
             transition: color 0.2s;
         }
-        #strudel-close-btn:hover {
-            color: #ff5252;
-        }
+        #strudel-close-btn:hover { color: #ff5252; }
         #strudel-audio-indicator {
             width: 10px;
             height: 10px;
@@ -425,1054 +348,959 @@
             animation: pulse 0.8s infinite;
         }
         @keyframes pulse {
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
-            }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
         }
-
-        /* Подсказка над экраном */
         .strudel-hint {
             position: absolute;
             color: white;
             font-size: 18px;
             pointer-events: none;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
             animation: floatHint 2s ease-in-out infinite;
         }
         @keyframes floatHint {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
     </style>
 </head>
 <body>
-    <div id="loading-overlay"><div class="spinner"></div><p>Загрузка мира...</p></div>
+<div id="loading-overlay"><div class="spinner"></div><p>Загрузка мира...</p></div>
 
-    <div id="p2p-graph-container"><canvas id="p2p-graph" width="220" height="200"></canvas></div>
+<div id="p2p-graph-container"><canvas id="p2p-graph" width="220" height="200"></canvas></div>
 
-    <div id="interaction-menu">
-        <div class="menu-header" id="target-name">Игрок</div>
-        <div class="menu-item" onclick="startChat()"><i class="fa-regular fa-comment"></i></div>
-        <div class="menu-item" onclick="sendFile()"><i class="fa-regular fa-file"></i></div>
-        <div class="menu-item disabled"><i class="fa-solid fa-phone"></i></div>
-        <div class="menu-item disabled"><i class="fa-solid fa-video"></i></div>
+<div id="interaction-menu">
+    <div class="menu-header" id="target-name">Игрок</div>
+    <div class="menu-item" onclick="startChat()"><i class="fa-regular fa-comment"></i></div>
+    <div class="menu-item" onclick="sendFile()"><i class="fa-regular fa-file"></i></div>
+    <div class="menu-item disabled"><i class="fa-solid fa-phone"></i></div>
+    <div class="menu-item disabled"><i class="fa-solid fa-video"></i></div>
+</div>
+
+<div id="nickname-modal">
+    <h3>Введите ваш никнейм</h3>
+    <input type="text" id="nick-input" placeholder="Имя игрока" maxlength="12">
+    <br>
+    <button onclick="saveNickname()">Сохранить</button>
+</div>
+
+<div id="chat-modal">
+    <div id="chat-header">
+        <span id="chat-partner">💬 Чат</span>
+        <span style="cursor:pointer" onclick="closeChat()">✖</span>
     </div>
-
-    <div id="nickname-modal">
-        <h3>Введите ваш никнейм</h3>
-        <input type="text" id="nick-input" placeholder="Имя игрока" maxlength="12">
-        <br>
-        <button onclick="saveNickname()">Сохранить</button>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Сообщение..." maxlength="200">
+        <button id="chat-send" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
+</div>
 
-    <div id="chat-modal">
-        <div id="chat-header">
-            <span id="chat-partner">💬 Чат</span>
-            <span style="cursor:pointer" onclick="closeChat()">✖</span>
-        </div>
-        <div id="chat-messages"></div>
-        <div id="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Сообщение..." maxlength="200">
-            <button id="chat-send" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
+<div id="strudel-modal">
+    <div id="strudel-header">
+        <span><span id="strudel-audio-indicator"></span>🎵 Strudel Live Coding</span>
+        <span id="strudel-close-btn" onclick="closeStrudel()">✖</span>
     </div>
-
-    <!-- Strudel панель -->
-    <div id="strudel-modal">
-        <div id="strudel-header">
-            <span><span id="strudel-audio-indicator"></span>🎵 Strudel Live Coding</span>
-            <span id="strudel-close-btn" onclick="closeStrudel()">✖</span>
-        </div>
-        <div id="strudel-body">
-            <textarea id="strudel-editor" placeholder="// Введите код Strudel здесь...&#10;// Например: note('c3 e3 g3').s('piano')&#10;// Нажмите Ctrl+Enter для запуска" spellcheck="false"></textarea>
-        </div>
-        <div id="strudel-controls">
-            <button id="strudel-run-btn" onclick="executeStrudelCode()">▶ Выполнить</button>
-            <span id="strudel-status">Готов к запуску</span>
-        </div>
+    <div id="strudel-body">
+        <textarea id="strudel-editor" placeholder="// Введите код Strudel здесь...&#10;// Например: note('c3 e3 g3').s('piano')&#10;// Нажмите Ctrl+Enter для запуска" spellcheck="false"></textarea>
     </div>
-
-    <div id="mobile-controls">
-        <button class="ctrl-btn" id="btn-up"><i class="fa-solid fa-arrow-up"></i></button>
-        <div style="display:flex; flex-direction:column; gap:10px;">
-            <button class="ctrl-btn" id="btn-left"><i class="fa-solid fa-arrow-left"></i></button>
-            <button class="ctrl-btn" id="btn-right"><i class="fa-solid fa-arrow-right"></i></button>
-        </div>
-        <button class="ctrl-btn" id="btn-down"><i class="fa-solid fa-arrow-down"></i></button>
-        <button class="ctrl-btn" id="btn-run" title="Бег"><i class="fa-solid fa-person-running"></i></button>
+    <div id="strudel-controls">
+        <button id="strudel-run-btn" onclick="executeStrudelCode()">▶ Выполнить</button>
+        <span id="strudel-status">Готов к запуску</span>
     </div>
+</div>
 
-    <div id="notification-container"></div>
+<div id="mobile-controls">
+    <button class="ctrl-btn" id="btn-up"><i class="fa-solid fa-arrow-up"></i></button>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="ctrl-btn" id="btn-left"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="ctrl-btn" id="btn-right"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+    <button class="ctrl-btn" id="btn-down"><i class="fa-solid fa-arrow-down"></i></button>
+    <button class="ctrl-btn" id="btn-run" title="Бег"><i class="fa-solid fa-person-running"></i></button>
+</div>
 
-    <!-- Скрытый iframe для Strudel Audio Engine -->
-    <iframe id="strudel-iframe" style="display:none;width:0;height:0;border:none;" sandbox="allow-scripts allow-same-origin" allow="autoplay"></iframe>
+<div id="notification-container"></div>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-            }
+<iframe id="strudel-iframe" style="display:none;width:0;height:0;border:none;" sandbox="allow-scripts allow-same-origin" allow="autoplay"></iframe>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
         }
-    </script>
+    }
+</script>
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-        // ---------- НАСТРОЙКИ СЕТИ ----------
-        const SERVER_URL = "wss://game-ws-server.onrender.com";
-        let myId = null;
-        let myNickname = "Игрок";
-        const players = new Map();
-        const unreadCounts = new Map();
+    // ---------- НАСТРОЙКИ СЕТИ ----------
+    const SERVER_URL = "wss://game-ws-server.onrender.com";
+    let myId = null;
+    let myNickname = "Игрок";
+    const players = new Map();
+    const unreadCounts = new Map();
 
-        const ws = new WebSocket(SERVER_URL);
-        ws.onopen = () => console.log('WebSocket подключён');
-        ws.onmessage = (event) => {
-            const msg = JSON.parse(event.data);
-            switch (msg.type) {
-                case 'welcome':
-                    myId = msg.id;
-                    myNickname = "Игрок " + myId.slice(0, 4);
-                    msg.players.forEach(p => {
-                        if (p.id !== myId) addRemotePlayer(p.id, p.nick);
-                    });
-                    drawGraph();
-                    break;
-                case 'player-joined':
-                    if (msg.id !== myId) addRemotePlayer(msg.id, msg.nick);
-                    break;
-                case 'player-left':
-                    removeRemotePlayer(msg.id);
-                    break;
-                case 'nickname-changed':
-                    if (msg.id !== myId && players.has(msg.id)) {
-                        const p = players.get(msg.id);
-                        p.nick = msg.nick;
-                        if (p.model) {
-                            const oldLabel = p.model.getObjectByName('label');
-                            if (oldLabel) p.model.remove(oldLabel);
-                            const newLabel = createTextLabel(msg.nick, '#444');
-                            newLabel.name = 'label';
-                            p.model.add(newLabel);
-                        }
-                        drawGraph();
-                    }
-                    break;
-                case 'pos':
-                    if (msg.id !== myId && players.has(msg.id)) {
-                        const p = players.get(msg.id);
-                        p.targetPos.set(msg.x, msg.y, msg.z);
-                        p.targetRot.set(msg.rx, msg.ry, msg.rz, msg.rw);
-                        p.targetAnim = msg.anim;
-                    }
-                    break;
-                case 'chat':
-                    if (msg.to === myId || msg.from === myId) {
-                        receiveChat(msg.from, msg.to, msg.text, msg.timestamp);
-                    }
-                    break;
-                case 'chat-history':
-                    if (msg.partnerId === currentTargetId) {
-                        renderHistoryMessages(msg.messages);
-                    }
-                    break;
-                case 'strudel-code':
-                    // Получен код Strudel от другого игрока
-                    handleRemoteStrudelCode(msg.code, msg.senderNick);
-                    break;
-            }
-            drawGraph();
-        };
-        ws.onclose = () => {
-            showNotification('Система', 'Соединение с сервером потеряно. Обновите страницу.', true);
-        };
-
-        setInterval(() => {
-            if (!localModel || !myId) return;
-            const isMoving = keys.w || keys.a || keys.s || keys.d;
-            const currentAnim = isMoving ? (keys.shift ? 'run' : 'walk') : 'idle';
-            ws.send(JSON.stringify({
-                type: 'pos',
-                id: myId,
-                x: localModel.position.x,
-                y: localModel.position.y,
-                z: localModel.position.z,
-                rx: localModel.quaternion.x,
-                ry: localModel.quaternion.y,
-                rz: localModel.quaternion.z,
-                rw: localModel.quaternion.w,
-                anim: currentAnim
-            }));
-        }, 50);
-
-        // --- Трёхмерная сцена ---
-        let scene, camera, renderer, clock, controls, raycaster, mouse;
-        let localModel, localMixer;
-        const localActions = { idle: null, walk: null, run: null };
-        const keys = { w: false, a: false, s: false, d: false, shift: false };
-        const walkDirection = new THREE.Vector3();
-        const rotateQuaternion = new THREE.Quaternion();
-        const cameraTarget = new THREE.Vector3();
-        const RICK_MODEL_URL = 'https://threejs.org/examples/models/gltf/Xbot.glb';
-
-        let currentTargetId = null;
-        let currentTargetNick = '';
-
-        // Переменные Strudel
-        let strudelScreen = null;
-        let strudelScreenCanvas = null;
-        let strudelScreenCtx = null;
-        let strudelScreenTexture = null;
-        let strudelIframe = null;
-        let currentStrudelCode = '// Нажмите на экран Strudel, чтобы начать live coding\n// Пример: note("c3 e3 g3").s("piano")';
-        let strudelIframeReady = false;
-
-        const graphCanvas = document.getElementById('p2p-graph');
-        const graphCtx = graphCanvas.getContext('2d');
-
-        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        const mobilePanel = document.getElementById('mobile-controls');
-
-        function toggleMobilePanel(show) {
-            if (!isMobile) return;
-            mobilePanel.style.display = show ? 'flex' : 'none';
-        }
-
-        function setupMobileControls() {
-            if (!isMobile) {
-                mobilePanel.style.display = 'none';
-                return;
-            }
-            mobilePanel.style.display = 'flex';
-
-            const btnUp = document.getElementById('btn-up');
-            const btnDown = document.getElementById('btn-down');
-            const btnLeft = document.getElementById('btn-left');
-            const btnRight = document.getElementById('btn-right');
-            const btnRun = document.getElementById('btn-run');
-
-            function activate(key, btn) {
-                return (e) => {
-                    e.preventDefault();
-                    keys[key] = true;
-                    if (btn) btn.classList.add('active');
-                };
-            }
-
-            function deactivate(key, btn) {
-                return (e) => {
-                    e.preventDefault();
-                    keys[key] = false;
-                    if (btn) btn.classList.remove('active');
-                };
-            }
-
-            const events = [
-                { el: btnUp, key: 'w' },
-                { el: btnDown, key: 's' },
-                { el: btnLeft, key: 'a' },
-                { el: btnRight, key: 'd' },
-                { el: btnRun, key: 'shift' }
-            ];
-
-            events.forEach(({ el, key }) => {
-                if (!el) return;
-                el.addEventListener('touchstart', activate(key, el), { passive: false });
-                el.addEventListener('touchend', deactivate(key, el), { passive: false });
-                el.addEventListener('touchcancel', deactivate(key, el), { passive: false });
-                el.addEventListener('mousedown', activate(key, el));
-                el.addEventListener('mouseup', deactivate(key, el));
-                el.addEventListener('mouseleave', deactivate(key, el));
-            });
-        }
-
-        function drawGraph() {
-            if (!graphCtx) return;
-            const w = graphCanvas.width,
-                h = graphCanvas.height;
-            graphCtx.clearRect(0, 0, w, h);
-            const ids = [myId, ...players.keys()].filter(Boolean);
-            const centerX = w / 2,
-                centerY = h / 2 - 10,
-                radius = Math.min(w, h) * 0.3;
-            const positions = new Map();
-            ids.forEach((id, i) => {
-                const angle = (i / ids.length) * Math.PI * 2 - Math.PI / 2;
-                positions.set(id, { x: centerX + Math.cos(angle) * radius, y: centerY + Math.sin(angle) * radius });
-            });
-            graphCtx.beginPath();
-            graphCtx.strokeStyle = '#FFFFFF';
-            graphCtx.lineWidth = 2;
-            const idList = Array.from(positions.keys());
-            for (let i = 0; i < idList.length; i++) {
-                for (let j = i + 1; j < idList.length; j++) {
-                    const p1 = positions.get(idList[i]),
-                        p2 = positions.get(idList[j]);
-                    graphCtx.moveTo(p1.x, p1.y);
-                    graphCtx.lineTo(p2.x, p2.y);
-                }
-            }
-            graphCtx.stroke();
-            positions.forEach((pos, id) => {
-                const nick = id === myId ? myNickname : (players.get(id)?.nick || id.slice(0, 4));
-                graphCtx.beginPath();
-                graphCtx.arc(pos.x, pos.y, 14, 0, Math.PI * 2);
-                graphCtx.fillStyle = id === myId ? '#007bff' : '#28a745';
-                graphCtx.fill();
-                graphCtx.strokeStyle = '#ffffff';
-                graphCtx.lineWidth = 2;
-                graphCtx.stroke();
-                graphCtx.font = 'bold 11px "Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
-                graphCtx.fillStyle = '#000000';
-                graphCtx.textAlign = 'center';
-                graphCtx.textBaseline = 'top';
-                graphCtx.fillText(nick.length > 8 ? nick.slice(0, 7) + '…' : nick, pos.x, pos.y + 20);
-            });
-            graphCtx.font = 'bold 10px sans-serif';
-            graphCtx.fillText(`Игроки (${ids.length})`, centerX, h - 10);
-        }
-
-        function addRemotePlayer(id, nick) {
-            const loader = new GLTFLoader();
-            const model = new THREE.Group();
-            model.userData.playerId = id;
-            scene.add(model);
-            players.set(id, { model, loading: true, nick, messageIconSprite: null });
-            unreadCounts.set(id, 0);
-            loader.load(RICK_MODEL_URL, (gltf) => {
-                const newModel = gltf.scene;
-                newModel.userData.playerId = id;
-                scene.remove(model);
-                scene.add(newModel);
-                newModel.traverse(c => { if (c.isMesh) c.userData.isPlayer = true; });
-                const label = createTextLabel(nick, '#444');
-                label.name = 'label';
-                newModel.add(label);
-                const mixer = new THREE.AnimationMixer(newModel);
-                const actions = { idle: null, walk: null, run: null };
-                setupAnimations(gltf.animations, mixer, actions);
-                players.set(id, {
-                    model: newModel,
-                    mixer,
-                    actions,
-                    nick,
-                    targetPos: new THREE.Vector3(),
-                    targetRot: new THREE.Quaternion(),
-                    targetAnim: 'idle',
-                    messageIconSprite: null
+    const ws = new WebSocket(SERVER_URL);
+    ws.onopen = () => console.log('WebSocket подключён');
+    ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        switch (msg.type) {
+            case 'welcome':
+                myId = msg.id;
+                myNickname = "Игрок " + myId.slice(0,4);
+                msg.players.forEach(p => {
+                    if (p.id !== myId) addRemotePlayer(p.id, p.nick);
                 });
-            });
+                drawGraph();
+                break;
+            case 'player-joined':
+                if (msg.id !== myId) addRemotePlayer(msg.id, msg.nick);
+                break;
+            case 'player-left':
+                removeRemotePlayer(msg.id);
+                break;
+            case 'nickname-changed':
+                if (msg.id !== myId && players.has(msg.id)) {
+                    const p = players.get(msg.id);
+                    p.nick = msg.nick;
+                    if (p.model) {
+                        const oldLabel = p.model.getObjectByName('label');
+                        if (oldLabel) p.model.remove(oldLabel);
+                        const newLabel = createTextLabel(msg.nick, '#444');
+                        newLabel.name = 'label';
+                        p.model.add(newLabel);
+                    }
+                    drawGraph();
+                }
+                break;
+            case 'pos':
+                if (msg.id !== myId && players.has(msg.id)) {
+                    const p = players.get(msg.id);
+                    p.targetPos.set(msg.x, msg.y, msg.z);
+                    p.targetRot.set(msg.rx, msg.ry, msg.rz, msg.rw);
+                    p.targetAnim = msg.anim;
+                }
+                break;
+            case 'chat':
+                if (msg.to === myId || msg.from === myId) {
+                    receiveChat(msg.from, msg.to, msg.text, msg.timestamp);
+                }
+                break;
+            case 'chat-history':
+                if (msg.partnerId === currentTargetId) {
+                    renderHistoryMessages(msg.messages);
+                }
+                break;
+            case 'strudel-code':
+                handleRemoteStrudelCode(msg.code, msg.senderNick);
+                break;
+        }
+        drawGraph();
+    };
+    ws.onclose = () => {
+        showNotification('Система', 'Соединение с сервером потеряно. Обновите страницу.', true);
+    };
+
+    setInterval(() => {
+        if (!localModel || !myId) return;
+        const isMoving = keys.w || keys.a || keys.s || keys.d;
+        const currentAnim = isMoving ? (keys.shift ? 'run' : 'walk') : 'idle';
+        ws.send(JSON.stringify({
+            type: 'pos',
+            id: myId,
+            x: localModel.position.x,
+            y: localModel.position.y,
+            z: localModel.position.z,
+            rx: localModel.quaternion.x,
+            ry: localModel.quaternion.y,
+            rz: localModel.quaternion.z,
+            rw: localModel.quaternion.w,
+            anim: currentAnim
+        }));
+    }, 50);
+
+    // --- Трёхмерная сцена ---
+    let scene, camera, renderer, clock, controls, raycaster, mouse;
+    let localModel, localMixer;
+    const localActions = { idle: null, walk: null, run: null };
+    const keys = { w: false, a: false, s: false, d: false, shift: false };
+    const walkDirection = new THREE.Vector3();
+    const rotateQuaternion = new THREE.Quaternion();
+    const cameraTarget = new THREE.Vector3();
+    const RICK_MODEL_URL = 'https://threejs.org/examples/models/gltf/Xbot.glb';
+
+    let currentTargetId = null;
+    let currentTargetNick = '';
+
+    // Переменные Strudel
+    let strudelScreen = null;
+    let strudelScreenCanvas = null;
+    let strudelScreenCtx = null;
+    let strudelScreenTexture = null;
+    let strudelIframe = null;
+    let currentStrudelCode = '// Нажмите на экран Strudel, чтобы начать live coding\n// Пример: note("c3 e3 g3").s("piano")';
+    let strudelIframeReady = false;
+
+    const graphCanvas = document.getElementById('p2p-graph');
+    const graphCtx = graphCanvas.getContext('2d');
+
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const mobilePanel = document.getElementById('mobile-controls');
+
+    function toggleMobilePanel(show) {
+        if (!isMobile) return;
+        mobilePanel.style.display = show ? 'flex' : 'none';
+    }
+
+    function setupMobileControls() {
+        if (!isMobile) {
+            mobilePanel.style.display = 'none';
+            return;
+        }
+        mobilePanel.style.display = 'flex';
+
+        const btnUp = document.getElementById('btn-up');
+        const btnDown = document.getElementById('btn-down');
+        const btnLeft = document.getElementById('btn-left');
+        const btnRight = document.getElementById('btn-right');
+        const btnRun = document.getElementById('btn-run');
+
+        function activate(key, btn) {
+            return (e) => {
+                e.preventDefault();
+                keys[key] = true;
+                if (btn) btn.classList.add('active');
+            };
+        }
+        function deactivate(key, btn) {
+            return (e) => {
+                e.preventDefault();
+                keys[key] = false;
+                if (btn) btn.classList.remove('active');
+            };
         }
 
-        function removeRemotePlayer(id) {
-            const p = players.get(id);
-            if (p) {
-                if (p.messageIconSprite) {
-                    p.model?.remove(p.messageIconSprite);
-                }
-                scene.remove(p.model);
-                players.delete(id);
-                unreadCounts.delete(id);
+        const events = [
+            { el: btnUp, key: 'w' },
+            { el: btnDown, key: 's' },
+            { el: btnLeft, key: 'a' },
+            { el: btnRight, key: 'd' },
+            { el: btnRun, key: 'shift' }
+        ];
+
+        events.forEach(({el, key}) => {
+            if (!el) return;
+            el.addEventListener('touchstart', activate(key, el), {passive: false});
+            el.addEventListener('touchend', deactivate(key, el), {passive: false});
+            el.addEventListener('touchcancel', deactivate(key, el), {passive: false});
+            el.addEventListener('mousedown', activate(key, el));
+            el.addEventListener('mouseup', deactivate(key, el));
+            el.addEventListener('mouseleave', deactivate(key, el));
+        });
+    }
+
+    function drawGraph() {
+        if (!graphCtx) return;
+        const w = graphCanvas.width, h = graphCanvas.height;
+        graphCtx.clearRect(0, 0, w, h);
+        const ids = [myId, ...players.keys()].filter(Boolean);
+        const centerX = w/2, centerY = h/2-10, radius = Math.min(w,h)*0.3;
+        const positions = new Map();
+        ids.forEach((id, i) => {
+            const angle = (i / ids.length) * Math.PI*2 - Math.PI/2;
+            positions.set(id, { x: centerX + Math.cos(angle)*radius, y: centerY + Math.sin(angle)*radius });
+        });
+        graphCtx.beginPath();
+        graphCtx.strokeStyle = '#FFFFFF';
+        graphCtx.lineWidth = 2;
+        const idList = Array.from(positions.keys());
+        for(let i=0; i<idList.length; i++) {
+            for(let j=i+1; j<idList.length; j++) {
+                const p1 = positions.get(idList[i]), p2 = positions.get(idList[j]);
+                graphCtx.moveTo(p1.x, p1.y);
+                graphCtx.lineTo(p2.x, p2.y);
             }
         }
+        graphCtx.stroke();
+        positions.forEach((pos, id) => {
+            const nick = id === myId ? myNickname : (players.get(id)?.nick || id.slice(0,4));
+            graphCtx.beginPath();
+            graphCtx.arc(pos.x, pos.y, 14, 0, Math.PI*2);
+            graphCtx.fillStyle = id === myId ? '#007bff' : '#28a745';
+            graphCtx.fill();
+            graphCtx.strokeStyle = '#ffffff';
+            graphCtx.lineWidth = 2;
+            graphCtx.stroke();
+            graphCtx.font = 'bold 11px "Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
+            graphCtx.fillStyle = '#000000';
+            graphCtx.textAlign = 'center';
+            graphCtx.textBaseline = 'top';
+            graphCtx.fillText(nick.length>8 ? nick.slice(0,7)+'…' : nick, pos.x, pos.y+20);
+        });
+        graphCtx.font = 'bold 10px sans-serif';
+        graphCtx.fillText(`Игроки (${ids.length})`, centerX, h-10);
+    }
 
-        function createTextLabel(text, color = '#333') {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 128;
-            const ctx = canvas.getContext('2d');
-            ctx.font = 'bold 42px sans-serif';
-            ctx.fillStyle = color;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 6;
-            ctx.strokeText(text, 256, 64);
-            ctx.fillText(text, 256, 64);
-            const tex = new THREE.CanvasTexture(canvas);
-            const mat = new THREE.SpriteMaterial({ map: tex });
-            const sprite = new THREE.Sprite(mat);
-            sprite.scale.set(2.5, 0.6, 1);
-            sprite.position.y = 2.4;
-            return sprite;
-        }
-
-        function setupAnimations(clips, mixer, storage) {
-            clips.forEach(clip => {
-                const n = clip.name.toLowerCase();
-                let type = n.includes('idle') ? 'idle' : n.includes('run') ? 'run' : n.includes('walk') ? 'walk' :
-                null;
-                if (type) {
-                    const action = mixer.clipAction(clip);
-                    storage[type] = action;
-                    action.play();
-                    action.setEffectiveWeight(type === 'idle' ? 1 : 0);
-                }
+    function addRemotePlayer(id, nick) {
+        const loader = new GLTFLoader();
+        const model = new THREE.Group();
+        model.userData.playerId = id;
+        scene.add(model);
+        players.set(id, { model, loading: true, nick, messageIconSprite: null });
+        unreadCounts.set(id, 0);
+        loader.load(RICK_MODEL_URL, (gltf) => {
+            const newModel = gltf.scene;
+            newModel.userData.playerId = id;
+            scene.remove(model);
+            scene.add(newModel);
+            newModel.traverse(c => { if(c.isMesh) c.userData.isPlayer = true; });
+            const label = createTextLabel(nick, '#444');
+            label.name = 'label';
+            newModel.add(label);
+            const mixer = new THREE.AnimationMixer(newModel);
+            const actions = { idle: null, walk: null, run: null };
+            setupAnimations(gltf.animations, mixer, actions);
+            players.set(id, {
+                model: newModel, mixer, actions, nick,
+                targetPos: new THREE.Vector3(),
+                targetRot: new THREE.Quaternion(),
+                targetAnim: 'idle',
+                messageIconSprite: null
             });
-        }
+        });
+    }
 
-        function updateMessageIcon(playerId) {
-            const p = players.get(playerId);
-            if (!p || !p.model || p.loading) return;
-            const model = p.model;
-            const count = unreadCounts.get(playerId) || 0;
-            const oldIcon = model.getObjectByName('message-icon');
-            if (oldIcon) {
-                model.remove(oldIcon);
-                p.messageIconSprite = null;
+    function removeRemotePlayer(id) {
+        const p = players.get(id);
+        if (p) {
+            if (p.messageIconSprite) {
+                p.model?.remove(p.messageIconSprite);
             }
-            if (count <= 0) return;
-
-            const canvas = document.createElement('canvas');
-            canvas.width = 128;
-            canvas.height = 128;
-            const ctx = canvas.getContext('2d');
-            ctx.font = '48px "Font Awesome 6 Free"';
-            ctx.fillStyle = '#007bff';
-            ctx.textAlign = 'center';
-            ctx.fillText('\uf4ad', 64, 72);
-            ctx.beginPath();
-            ctx.arc(96, 36, 18, 0, Math.PI * 2);
-            ctx.fillStyle = '#ff3b30';
-            ctx.fill();
-            ctx.font = 'bold 20px "Segoe UI", sans-serif';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(count.toString(), 96, 42);
-
-            const tex = new THREE.CanvasTexture(canvas);
-            const mat = new THREE.SpriteMaterial({ map: tex });
-            const sprite = new THREE.Sprite(mat);
-            sprite.name = 'message-icon';
-            sprite.scale.set(1.2, 1.2, 1);
-            sprite.position.y = 3.2;
-            model.add(sprite);
-            p.messageIconSprite = sprite;
+            scene.remove(p.model);
+            players.delete(id);
+            unreadCounts.delete(id);
         }
+    }
 
-        // --- Функции Strudel ---
-        function initStrudelIframe() {
-            strudelIframe = document.getElementById('strudel-iframe');
-            // Загружаем Strudel с дефолтным кодом
-            strudelIframe.src = 'https://strudel.cc/';
+    function createTextLabel(text, color='#333') {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.font = 'bold 42px sans-serif';
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 6;
+        ctx.strokeText(text, 256, 64);
+        ctx.fillText(text, 256, 64);
+        const tex = new THREE.CanvasTexture(canvas);
+        const mat = new THREE.SpriteMaterial({ map: tex });
+        const sprite = new THREE.Sprite(mat);
+        sprite.scale.set(2.5, 0.6, 1);
+        sprite.position.y = 2.4;
+        return sprite;
+    }
 
-            // Ждем готовности iframe
-            const checkReady = setInterval(() => {
-                if (strudelIframe.contentWindow) {
-                    // Strudel поддерживает postMessage API
+    function setupAnimations(clips, mixer, storage) {
+        clips.forEach(clip => {
+            const n = clip.name.toLowerCase();
+            let type = n.includes('idle') ? 'idle' : n.includes('run') ? 'run' : n.includes('walk') ? 'walk' : null;
+            if (type) {
+                const action = mixer.clipAction(clip);
+                storage[type] = action;
+                action.play();
+                action.setEffectiveWeight(type === 'idle' ? 1 : 0);
+            }
+        });
+    }
+
+    function updateMessageIcon(playerId) {
+        const p = players.get(playerId);
+        if (!p || !p.model || p.loading) return;
+        const model = p.model;
+        const count = unreadCounts.get(playerId) || 0;
+        const oldIcon = model.getObjectByName('message-icon');
+        if (oldIcon) {
+            model.remove(oldIcon);
+            p.messageIconSprite = null;
+        }
+        if (count <= 0) return;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.font = '48px "Font Awesome 6 Free"';
+        ctx.fillStyle = '#007bff';
+        ctx.textAlign = 'center';
+        ctx.fillText('\uf4ad', 64, 72);
+        ctx.beginPath();
+        ctx.arc(96, 36, 18, 0, Math.PI*2);
+        ctx.fillStyle = '#ff3b30';
+        ctx.fill();
+        ctx.font = 'bold 20px "Segoe UI", sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(count.toString(), 96, 42);
+
+        const tex = new THREE.CanvasTexture(canvas);
+        const mat = new THREE.SpriteMaterial({ map: tex });
+        const sprite = new THREE.Sprite(mat);
+        sprite.name = 'message-icon';
+        sprite.scale.set(1.2, 1.2, 1);
+        sprite.position.y = 3.2;
+        model.add(sprite);
+        p.messageIconSprite = sprite;
+    }
+
+    // --- Функции Strudel ---
+    function initStrudelIframe() {
+        strudelIframe = document.getElementById('strudel-iframe');
+        strudelIframe.src = 'https://strudel.cc/';
+
+        const checkReady = setInterval(() => {
+            if (strudelIframe.contentWindow) {
+                strudelIframeReady = true;
+                clearInterval(checkReady);
+                console.log('Strudel iframe готов');
+                if (currentStrudelCode && currentStrudelCode.trim()) {
+                    sendCodeToStrudel(currentStrudelCode);
+                }
+            }
+        }, 1000);
+
+        window.addEventListener('message', (event) => {
+            if (event.origin === 'https://strudel.cc' || event.origin === window.location.origin) {
+                if (event.data && event.data.type === 'strudel-ready') {
                     strudelIframeReady = true;
-                    clearInterval(checkReady);
-                    console.log('Strudel iframe готов');
-                    // Применяем текущий код, если он уже есть
-                    if (currentStrudelCode && currentStrudelCode.trim()) {
-                        sendCodeToStrudel(currentStrudelCode);
-                    }
                 }
-            }, 1000);
-
-            // Обработка сообщений от Strudel (опционально)
-            window.addEventListener('message', (event) => {
-                if (event.origin === 'https://strudel.cc' || event.origin === window.location.origin) {
-                    if (event.data && event.data.type === 'strudel-ready') {
-                        strudelIframeReady = true;
-                    }
-                    if (event.data && event.data.type === 'strudel-playing') {
-                        updateAudioIndicator(true);
-                    }
-                    if (event.data && event.data.type === 'strudel-stopped') {
-                        updateAudioIndicator(false);
-                    }
+                if (event.data && event.data.type === 'strudel-playing') {
+                    updateAudioIndicator(true);
                 }
-            });
-        }
-
-        function sendCodeToStrudel(code) {
-            if (!strudelIframeReady || !strudelIframe || !strudelIframe.contentWindow) {
-                console.warn('Strudel iframe не готов');
-                return;
-            }
-            try {
-                strudelIframe.contentWindow.postMessage({
-                    type: 'eval',
-                    code: code
-                }, 'https://strudel.cc');
-                updateAudioIndicator(true);
-                setTimeout(() => updateAudioIndicator(false), 2000);
-            } catch (e) {
-                console.error('Ошибка отправки кода в Strudel:', e);
-            }
-        }
-
-        function updateAudioIndicator(playing) {
-            const indicator = document.getElementById('strudel-audio-indicator');
-            if (indicator) {
-                if (playing) {
-                    indicator.classList.add('playing');
-                } else {
-                    indicator.classList.remove('playing');
-                }
-            }
-        }
-
-        function updateStrudelScreenTexture(code) {
-            if (!strudelScreenCtx || !strudelScreenCanvas) return;
-            const ctx = strudelScreenCtx;
-            const w = strudelScreenCanvas.width;
-            const h = strudelScreenCanvas.height;
-
-            // Фон экрана
-            ctx.fillStyle = '#1a1a2e';
-            ctx.fillRect(0, 0, w, h);
-
-            // Рамка
-            ctx.strokeStyle = '#ff9800';
-            ctx.lineWidth = 6;
-            ctx.strokeRect(3, 3, w - 6, h - 6);
-
-            // Заголовок
-            ctx.fillStyle = '#ff9800';
-            ctx.font = 'bold 32px "Courier New", monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText('🎵 STRUDEL LIVE CODING 🎵', w / 2, 50);
-
-            // Разделитель
-            ctx.strokeStyle = '#ff9800';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(40, 70);
-            ctx.lineTo(w - 40, 70);
-            ctx.stroke();
-
-            // Код
-            ctx.fillStyle = '#e0e0e0';
-            ctx.font = '22px "Courier New", monospace';
-            ctx.textAlign = 'left';
-            const lines = code.split('\n');
-            const maxLines = 15;
-            const lineHeight = 30;
-            const startY = 110;
-            for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
-                let line = lines[i];
-                if (line.length > 55) line = line.substring(0, 52) + '...';
-                ctx.fillText(line, 50, startY + i * lineHeight);
-            }
-            if (lines.length > maxLines) {
-                ctx.fillStyle = '#888';
-                ctx.fillText('... (прокрутите в редакторе)', 50, startY + maxLines * lineHeight);
-            }
-
-            // Подсказка
-            ctx.fillStyle = '#ff9800';
-            ctx.font = '18px "Segoe UI", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('Нажмите на экран для редактирования', w / 2, h - 30);
-
-            // Обновляем текстуру
-            if (strudelScreenTexture) {
-                strudelScreenTexture.needsUpdate = true;
-            }
-        }
-
-        function handleRemoteStrudelCode(code, senderNick) {
-            if (!code || code === currentStrudelCode) return;
-            currentStrudelCode = code;
-            // Обновляем текстуру экрана
-            updateStrudelScreenTexture(code);
-            // Выполняем код локально
-            sendCodeToStrudel(code);
-            // Обновляем редактор, если он открыт
-            const editor = document.getElementById('strudel-editor');
-            if (editor && document.getElementById('strudel-modal').style.display === 'flex') {
-                editor.value = code;
-            }
-            document.getElementById('strudel-status').innerText = `Код от ${senderNick || 'другого игрока'}`;
-            showNotification('Strudel', `${senderNick || 'Игрок'} обновил код`);
-        }
-
-        function executeStrudelCode() {
-            const editor = document.getElementById('strudel-editor');
-            const code = editor.value.trim();
-            if (!code) return;
-            currentStrudelCode = code;
-            // Обновляем экран
-            updateStrudelScreenTexture(code);
-            // Выполняем локально
-            sendCodeToStrudel(code);
-            // Отправляем всем через WebSocket
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'strudel-code',
-                    code: code,
-                    senderNick: myNickname,
-                    timestamp: Date.now()
-                }));
-                // Также отправляем как chat для гарантии доставки, если сервер фильтрует неизвестные типы
-                ws.send(JSON.stringify({
-                    type: 'chat',
-                    to: 'strudel-broadcast',
-                    text: `[STRUDEL_CODE]${code}[/STRUDEL_CODE]`,
-                    timestamp: Date.now()
-                }));
-            }
-            document.getElementById('strudel-status').innerText = 'Код выполнен и отправлен всем';
-            setTimeout(() => {
-                document.getElementById('strudel-status').innerText = 'Готов к запуску';
-            }, 3000);
-        }
-
-        function openStrudelEditor() {
-            const modal = document.getElementById('strudel-modal');
-            const editor = document.getElementById('strudel-editor');
-            editor.value = currentStrudelCode;
-            modal.style.display = 'flex';
-            editor.focus();
-            toggleMobilePanel(false);
-            // Позиционируем курсор в конец
-            editor.selectionStart = editor.value.length;
-            editor.selectionEnd = editor.value.length;
-        }
-
-        window.closeStrudel = function() {
-            document.getElementById('strudel-modal').style.display = 'none';
-            toggleMobilePanel(true);
-        };
-
-        // Горячие клавиши для Strudel редактора
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                const modal = document.getElementById('strudel-modal');
-                if (modal.style.display === 'flex') {
-                    e.preventDefault();
-                    executeStrudelCode();
-                }
-            }
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('strudel-modal');
-                if (modal.style.display === 'flex') {
-                    closeStrudel();
+                if (event.data && event.data.type === 'strudel-stopped') {
+                    updateAudioIndicator(false);
                 }
             }
         });
+    }
 
-        // UI
-        graphCanvas.parentElement.addEventListener('click', () => openNickModal());
-        window.openNickModal = () => {
-            document.getElementById('nick-input').value = myNickname;
-            document.getElementById('nickname-modal').style.display = 'block';
-        };
-        window.saveNickname = () => {
-            const val = document.getElementById('nick-input').value.trim();
-            if (val && val !== myNickname) {
-                myNickname = val;
-                const oldLabel = localModel?.getObjectByName('label');
-                if (oldLabel) localModel.remove(oldLabel);
-                if (localModel) {
-                    const newLabel = createTextLabel(myNickname, '#007bff');
-                    newLabel.name = 'label';
-                    localModel.add(newLabel);
-                }
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({
-                        type: 'nickname-change',
-                        nick: myNickname
-                    }));
-                }
-                drawGraph();
-            }
-            document.getElementById('nickname-modal').style.display = 'none';
-        };
-
-        window.startChat = () => {
-            if (currentTargetId) {
-                openChat(currentTargetId, currentTargetNick);
-            }
-            hideMenu();
-        };
-        window.sendFile = () => {
-            alert("Файлы пока не поддерживаются в этой версии.");
-            hideMenu();
-        };
-
-        function hideMenu() {
-            document.getElementById('interaction-menu').style.display = 'none';
+    function sendCodeToStrudel(code) {
+        if (!strudelIframeReady || !strudelIframe || !strudelIframe.contentWindow) {
+            console.warn('Strudel iframe не готов');
+            return;
         }
+        try {
+            strudelIframe.contentWindow.postMessage({
+                type: 'eval',
+                code: code
+            }, 'https://strudel.cc');
+            updateAudioIndicator(true);
+            setTimeout(() => updateAudioIndicator(false), 2000);
+        } catch (e) {
+            console.error('Ошибка отправки кода в Strudel:', e);
+        }
+    }
 
-        function openChat(targetId, nick) {
-            currentTargetId = targetId;
-            currentTargetNick = nick;
-            document.getElementById('chat-partner').innerText = `💬 ${nick}`;
-            document.getElementById('chat-messages').innerHTML = '';
-            document.getElementById('chat-modal').style.display = 'flex';
-            unreadCounts.set(targetId, 0);
-            updateMessageIcon(targetId);
-
-            toggleMobilePanel(false);
-
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'request-chat-history',
-                    partnerId: targetId
-                }));
+    function updateAudioIndicator(playing) {
+        const indicator = document.getElementById('strudel-audio-indicator');
+        if (indicator) {
+            if (playing) {
+                indicator.classList.add('playing');
+            } else {
+                indicator.classList.remove('playing');
             }
-            document.getElementById('chat-input').focus();
         }
+    }
 
-        function renderHistoryMessages(messages) {
-            const container = document.getElementById('chat-messages');
-            if (!container) return;
-            container.innerHTML = '';
-            messages.forEach(msg => {
-                addChatMessage(msg.from, msg.text, msg.timestamp);
-            });
-            container.scrollTop = container.scrollHeight;
+    function updateStrudelScreenTexture(code) {
+        if (!strudelScreenCtx || !strudelScreenCanvas) return;
+        const ctx = strudelScreenCtx;
+        const w = strudelScreenCanvas.width;
+        const h = strudelScreenCanvas.height;
+
+        ctx.fillStyle = '#1a1a2e';
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = '#ff9800';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(3, 3, w - 6, h - 6);
+        ctx.fillStyle = '#ff9800';
+        ctx.font = 'bold 32px "Courier New", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎵 STRUDEL LIVE CODING 🎵', w / 2, 50);
+        ctx.strokeStyle = '#ff9800';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(40, 70);
+        ctx.lineTo(w - 40, 70);
+        ctx.stroke();
+        ctx.fillStyle = '#e0e0e0';
+        ctx.font = '22px "Courier New", monospace';
+        ctx.textAlign = 'left';
+        const lines = code.split('\n');
+        const maxLines = 15;
+        const lineHeight = 30;
+        const startY = 110;
+        for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
+            let line = lines[i];
+            if (line.length > 55) line = line.substring(0, 52) + '...';
+            ctx.fillText(line, 50, startY + i * lineHeight);
         }
+        if (lines.length > maxLines) {
+            ctx.fillStyle = '#888';
+            ctx.fillText('... (прокрутите в редакторе)', 50, startY + maxLines * lineHeight);
+        }
+        ctx.fillStyle = '#ff9800';
+        ctx.font = '18px "Segoe UI", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Нажмите на экран для редактирования', w / 2, h - 30);
 
-        window.closeChat = () => {
-            document.getElementById('chat-modal').style.display = 'none';
-            currentTargetId = null;
-            currentTargetNick = '';
+        if (strudelScreenTexture) {
+            strudelScreenTexture.needsUpdate = true;
+        }
+    }
 
-            toggleMobilePanel(true);
-        };
+    function handleRemoteStrudelCode(code, senderNick) {
+        if (!code || code === currentStrudelCode) return;
+        currentStrudelCode = code;
+        updateStrudelScreenTexture(code);
+        sendCodeToStrudel(code);
+        const editor = document.getElementById('strudel-editor');
+        if (editor && document.getElementById('strudel-modal').style.display === 'flex') {
+            editor.value = code;
+        }
+        document.getElementById('strudel-status').innerText = `Код от ${senderNick || 'другого игрока'}`;
+        showNotification('Strudel', `${senderNick || 'Игрок'} обновил код`);
+    }
 
-        window.sendChatMessage = () => {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if (!text || !currentTargetId) return;
+    function executeStrudelCode() {
+        const editor = document.getElementById('strudel-editor');
+        const code = editor.value.trim();
+        if (!code) return;
+        currentStrudelCode = code;
+        updateStrudelScreenTexture(code);
+        sendCodeToStrudel(code);
+        if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
-                type: 'chat',
-                to: currentTargetId,
-                text: text,
+                type: 'strudel-code',
+                code: code,
+                senderNick: myNickname,
                 timestamp: Date.now()
             }));
-            input.value = '';
-        };
+        }
+        document.getElementById('strudel-status').innerText = 'Код выполнен и отправлен всем';
+        setTimeout(() => {
+            document.getElementById('strudel-status').innerText = 'Готов к запуску';
+        }, 3000);
+    }
+    // Делаем функцию глобально доступной для onclick
+    window.executeStrudelCode = executeStrudelCode;
 
-        function receiveChat(from, to, text, timestamp) {
-            // Проверяем, не является ли сообщение кодом Strudel
-            if (to === 'strudel-broadcast' && text.startsWith('[STRUDEL_CODE]') && text.endsWith(
-                    '[/STRUDEL_CODE]')) {
-                const code = text.substring('[STRUDEL_CODE]'.length, text.length - '[/STRUDEL_CODE]'.length);
-                if (code && code !== currentStrudelCode) {
-                    handleRemoteStrudelCode(code, players.get(from)?.nick || 'Игрок');
-                }
-                return;
-            }
+    function openStrudelEditor() {
+        const modal = document.getElementById('strudel-modal');
+        const editor = document.getElementById('strudel-editor');
+        editor.value = currentStrudelCode;
+        modal.style.display = 'flex';
+        editor.focus();
+        toggleMobilePanel(false);
+        editor.selectionStart = editor.value.length;
+        editor.selectionEnd = editor.value.length;
+    }
 
-            if (to === myId && from !== myId && (!currentTargetId || currentTargetId !== from)) {
-                const current = unreadCounts.get(from) || 0;
-                unreadCounts.set(from, current + 1);
-                updateMessageIcon(from);
-            }
-            if (currentTargetId && (from === currentTargetId || to === currentTargetId)) {
-                addChatMessage(from, text, timestamp);
-            }
-            if (from !== myId && to === myId && (!currentTargetId || currentTargetId !== from)) {
-                const sender = players.get(from)?.nick || 'Игрок';
-                showNotification(sender, text);
+    window.closeStrudel = function() {
+        document.getElementById('strudel-modal').style.display = 'none';
+        toggleMobilePanel(true);
+    };
+
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+            const modal = document.getElementById('strudel-modal');
+            if (modal.style.display === 'flex') {
+                e.preventDefault();
+                executeStrudelCode();
             }
         }
-
-        function addChatMessage(fromId, text, timestamp) {
-            const container = document.getElementById('chat-messages');
-            if (!container) return;
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'chat-msg ' + (fromId === myId ? 'mine' : 'other');
-            const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            msgDiv.innerHTML = `${text}<span class="chat-time">${time}</span>`;
-            container.appendChild(msgDiv);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function showNotification(sender, text, persistent = false) {
-            const container = document.getElementById('notification-container');
-            const div = document.createElement('div');
-            div.className = 'notification' + (persistent ? ' persistent' : '');
-            div.innerText = `${sender}: ${text}`;
-            container.appendChild(div);
-            if (!persistent) {
-                setTimeout(() => div.remove(), 3000);
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('strudel-modal');
+            if (modal.style.display === 'flex') {
+                window.closeStrudel();
             }
         }
+    });
 
-        // --- Запуск ---
-        init();
-
-        function init() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xe0e0e0);
-            scene.fog = new THREE.Fog(0xe0e0e0, 15, 60);
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-
-            if (isMobile) {
-                camera.position.set(0, 1.5, 5);
-            } else {
-                camera.position.set(0, 3, 10);
+    // UI
+    graphCanvas.parentElement.addEventListener('click', () => openNickModal());
+    window.openNickModal = () => {
+        document.getElementById('nick-input').value = myNickname;
+        document.getElementById('nickname-modal').style.display = 'block';
+    };
+    window.saveNickname = () => {
+        const val = document.getElementById('nick-input').value.trim();
+        if (val && val !== myNickname) {
+            myNickname = val;
+            const oldLabel = localModel?.getObjectByName('label');
+            if (oldLabel) localModel.remove(oldLabel);
+            if (localModel) {
+                const newLabel = createTextLabel(myNickname, '#007bff');
+                newLabel.name = 'label';
+                localModel.add(newLabel);
             }
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'nickname-change',
+                    nick: myNickname
+                }));
+            }
+            drawGraph();
+        }
+        document.getElementById('nickname-modal').style.display = 'none';
+    };
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    window.startChat = () => {
+        if (currentTargetId) {
+            openChat(currentTargetId, currentTargetNick);
+        }
+        hideMenu();
+    };
+    window.sendFile = () => {
+        alert("Файлы пока не поддерживаются в этой версии.");
+        hideMenu();
+    };
+    function hideMenu() {
+        document.getElementById('interaction-menu').style.display = 'none';
+    }
+
+    function openChat(targetId, nick) {
+        currentTargetId = targetId;
+        currentTargetNick = nick;
+        document.getElementById('chat-partner').innerText = `💬 ${nick}`;
+        document.getElementById('chat-messages').innerHTML = '';
+        document.getElementById('chat-modal').style.display = 'flex';
+        unreadCounts.set(targetId, 0);
+        updateMessageIcon(targetId);
+        toggleMobilePanel(false);
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: 'request-chat-history',
+                partnerId: targetId
+            }));
+        }
+        document.getElementById('chat-input').focus();
+    }
+
+    function renderHistoryMessages(messages) {
+        const container = document.getElementById('chat-messages');
+        if (!container) return;
+        container.innerHTML = '';
+        messages.forEach(msg => {
+            addChatMessage(msg.from, msg.text, msg.timestamp);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
+    window.closeChat = () => {
+        document.getElementById('chat-modal').style.display = 'none';
+        currentTargetId = null;
+        currentTargetNick = '';
+        toggleMobilePanel(true);
+    };
+
+    window.sendChatMessage = () => {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text || !currentTargetId) return;
+        ws.send(JSON.stringify({
+            type: 'chat',
+            to: currentTargetId,
+            text: text,
+            timestamp: Date.now()
+        }));
+        input.value = '';
+    };
+
+    function receiveChat(from, to, text, timestamp) {
+        if (to === myId && from !== myId && (!currentTargetId || currentTargetId !== from)) {
+            const current = unreadCounts.get(from) || 0;
+            unreadCounts.set(from, current + 1);
+            updateMessageIcon(from);
+        }
+        if (currentTargetId && (from === currentTargetId || to === currentTargetId)) {
+            addChatMessage(from, text, timestamp);
+        }
+        if (from !== myId && to === myId && (!currentTargetId || currentTargetId !== from)) {
+            const sender = players.get(from)?.nick || 'Игрок';
+            showNotification(sender, text);
+        }
+    }
+
+    function addChatMessage(fromId, text, timestamp) {
+        const container = document.getElementById('chat-messages');
+        if (!container) return;
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-msg ' + (fromId === myId ? 'mine' : 'other');
+        const time = new Date(timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        msgDiv.innerHTML = `${text}<span class="chat-time">${time}</span>`;
+        container.appendChild(msgDiv);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function showNotification(sender, text, persistent = false) {
+        const container = document.getElementById('notification-container');
+        const div = document.createElement('div');
+        div.className = 'notification' + (persistent ? ' persistent' : '');
+        div.innerText = `${sender}: ${text}`;
+        container.appendChild(div);
+        if (!persistent) {
+            setTimeout(() => div.remove(), 3000);
+        }
+    }
+
+    // --- Запуск ---
+    init();
+    function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xe0e0e0);
+        scene.fog = new THREE.Fog(0xe0e0e0, 15, 60);
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+
+        if (isMobile) {
+            camera.position.set(0, 1.5, 5);
+        } else {
+            camera.position.set(0, 3, 10);
+        }
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        clock = new THREE.Clock();
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x888888, 2));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(5, 12, 8);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(200,200), new THREE.MeshPhongMaterial({ color: 0xcccccc, depthWrite: false }));
+        floor.rotation.x = -Math.PI/2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+        scene.add(new THREE.GridHelper(100, 50, 0xbbbbbb, 0xdddddd));
+
+        // Виртуальный монитор Strudel
+        strudelScreenCanvas = document.createElement('canvas');
+        strudelScreenCanvas.width = 1024;
+        strudelScreenCanvas.height = 600;
+        strudelScreenCtx = strudelScreenCanvas.getContext('2d');
+        strudelScreenTexture = new THREE.CanvasTexture(strudelScreenCanvas);
+        const screenMaterial = new THREE.MeshBasicMaterial({ map: strudelScreenTexture, side: THREE.DoubleSide });
+        const screenGeometry = new THREE.PlaneGeometry(10, 5.8);
+        strudelScreen = new THREE.Mesh(screenGeometry, screenMaterial);
+        strudelScreen.position.set(0, 5.5, -10);
+        strudelScreen.name = 'strudel-screen';
+        strudelScreen.userData.isStrudelScreen = true;
+        scene.add(strudelScreen);
+
+        const frameGeometry = new THREE.BoxGeometry(10.3, 6.1, 0.2);
+        const frameMaterial = new THREE.MeshPhongMaterial({ color: 0x333333, emissive: 0x111111 });
+        const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+        frame.position.copy(strudelScreen.position);
+        frame.position.z += 0.15;
+        frame.userData.isStrudelScreen = true;
+        frame.name = 'strudel-frame';
+        scene.add(frame);
+
+        const neonGeometry = new THREE.BoxGeometry(10.5, 0.1, 0.1);
+        const neonMaterial = new THREE.MeshBasicMaterial({ color: 0xff9800 });
+        const neonTop = new THREE.Mesh(neonGeometry, neonMaterial);
+        neonTop.position.set(0, 8.55, -9.9);
+        neonTop.userData.isStrudelScreen = true;
+        scene.add(neonTop);
+        const neonBottom = new THREE.Mesh(neonGeometry, neonMaterial);
+        neonBottom.position.set(0, 2.45, -9.9);
+        neonBottom.userData.isStrudelScreen = true;
+        scene.add(neonBottom);
+
+        updateStrudelScreenTexture(currentStrudelCode);
+        initStrudelIframe();
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.target.set(0, 1, 0);
+        if (isMobile) {
+            controls.maxDistance = 10;
+            controls.minDistance = 2;
+        } else {
+            controls.maxDistance = 20;
+        }
+
+        const loader = new GLTFLoader();
+        loader.load(RICK_MODEL_URL, (gltf) => {
+            localModel = gltf.scene;
+            scene.add(localModel);
+            localModel.traverse(c => { if(c.isMesh) { c.castShadow = true; c.userData.isPlayer = true; } });
+            const label = createTextLabel(myNickname, '#007bff');
+            label.name = 'label';
+            localModel.add(label);
+            localMixer = new THREE.AnimationMixer(localModel);
+            setupAnimations(gltf.animations, localMixer, localActions);
+            document.getElementById('loading-overlay').style.display = 'none';
+            animate();
+        });
+
+        window.addEventListener('keydown', e => {
+            if (keys.hasOwnProperty(e.key.toLowerCase())) {
+                keys[e.key.toLowerCase()] = true;
+                e.preventDefault();
+            }
+            if(e.key==='Shift') keys.shift = true;
+        });
+        window.addEventListener('keyup', e => {
+            if (keys.hasOwnProperty(e.key.toLowerCase())) {
+                keys[e.key.toLowerCase()] = false;
+                e.preventDefault();
+            }
+            if(e.key==='Shift') keys.shift = false;
+        });
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth/window.innerHeight;
+            camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            document.body.appendChild(renderer.domElement);
+        });
+        renderer.domElement.addEventListener('mousedown', onCanvasMouseDown);
+        renderer.domElement.addEventListener('touchstart', onCanvasMouseDown);
+        document.addEventListener('mousedown', e => { if (!e.target.closest('#interaction-menu')) hideMenu(); });
 
-            clock = new THREE.Clock();
-            raycaster = new THREE.Raycaster();
-            mouse = new THREE.Vector2();
+        setupMobileControls();
+    }
 
-            scene.add(new THREE.HemisphereLight(0xffffff, 0x888888, 2));
-            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-            dirLight.position.set(5, 12, 8);
-            dirLight.castShadow = true;
-            scene.add(dirLight);
-            const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshPhongMaterial({ color: 0xcccccc,
-                depthWrite: false }));
-            floor.rotation.x = -Math.PI / 2;
-            floor.receiveShadow = true;
-            scene.add(floor);
-            scene.add(new THREE.GridHelper(100, 50, 0xbbbbbb, 0xdddddd));
-
-            // --- Создание огромного виртуального монитора Strudel ---
-            strudelScreenCanvas = document.createElement('canvas');
-            strudelScreenCanvas.width = 1024;
-            strudelScreenCanvas.height = 600;
-            strudelScreenCtx = strudelScreenCanvas.getContext('2d');
-            strudelScreenTexture = new THREE.CanvasTexture(strudelScreenCanvas);
-            const screenMaterial = new THREE.MeshBasicMaterial({
-                map: strudelScreenTexture,
-                side: THREE.DoubleSide,
-            });
-            const screenGeometry = new THREE.PlaneGeometry(10, 5.8);
-            strudelScreen = new THREE.Mesh(screenGeometry, screenMaterial);
-            strudelScreen.position.set(0, 5.5, -10);
-            strudelScreen.rotation.y = 0;
-            strudelScreen.name = 'strudel-screen';
-            strudelScreen.userData.isStrudelScreen = true;
-            scene.add(strudelScreen);
-
-            // Рамка вокруг экрана
-            const frameGeometry = new THREE.BoxGeometry(10.3, 6.1, 0.2);
-            const frameMaterial = new THREE.MeshPhongMaterial({ color: 0x333333, emissive: 0x111111 });
-            const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-            frame.position.copy(strudelScreen.position);
-            frame.position.z += 0.15;
-            frame.userData.isStrudelScreen = true;
-            frame.name = 'strudel-frame';
-            scene.add(frame);
-
-            // Неоновая подсветка
-            const neonGeometry = new THREE.BoxGeometry(10.5, 0.1, 0.1);
-            const neonMaterial = new THREE.MeshBasicMaterial({ color: 0xff9800 });
-            const neonTop = new THREE.Mesh(neonGeometry, neonMaterial);
-            neonTop.position.set(0, 8.55, -9.9);
-            neonTop.userData.isStrudelScreen = true;
-            scene.add(neonTop);
-            const neonBottom = new THREE.Mesh(neonGeometry, neonMaterial);
-            neonBottom.position.set(0, 2.45, -9.9);
-            neonBottom.userData.isStrudelScreen = true;
-            scene.add(neonBottom);
-
-            // Обновляем текстуру экрана
-            updateStrudelScreenTexture(currentStrudelCode);
-
-            // Инициализируем скрытый iframe Strudel
-            initStrudelIframe();
-
-            controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.target.set(0, 1, 0);
-
-            if (isMobile) {
-                controls.maxDistance = 10;
-                controls.minDistance = 2;
-            } else {
-                controls.maxDistance = 20;
-            }
-
-            const loader = new GLTFLoader();
-            loader.load(RICK_MODEL_URL, (gltf) => {
-                localModel = gltf.scene;
-                scene.add(localModel);
-                localModel.traverse(c => { if (c.isMesh) { c.castShadow = true;
-                        c.userData.isPlayer = true; } });
-                const label = createTextLabel(myNickname, '#007bff');
-                label.name = 'label';
-                localModel.add(label);
-                localMixer = new THREE.AnimationMixer(localModel);
-                setupAnimations(gltf.animations, localMixer, localActions);
-                document.getElementById('loading-overlay').style.display = 'none';
-                animate();
-            });
-
-            window.addEventListener('keydown', e => {
-                if (keys.hasOwnProperty(e.key.toLowerCase())) {
-                    keys[e.key.toLowerCase()] = true;
-                    e.preventDefault();
-                }
-                if (e.key === 'Shift') keys.shift = true;
-            });
-            window.addEventListener('keyup', e => {
-                if (keys.hasOwnProperty(e.key.toLowerCase())) {
-                    keys[e.key.toLowerCase()] = false;
-                    e.preventDefault();
-                }
-                if (e.key === 'Shift') keys.shift = false;
-            });
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-            renderer.domElement.addEventListener('mousedown', onCanvasMouseDown);
-            renderer.domElement.addEventListener('touchstart', onCanvasMouseDown);
-            document.addEventListener('mousedown', e => { if (!e.target.closest('#interaction-menu')) hideMenu(); });
-
-            setupMobileControls();
+    function onCanvasMouseDown(event) {
+        let clientX, clientY;
+        if (event.touches) {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        } else {
+            clientX = event.clientX;
+            clientY = event.clientY;
         }
 
-        function onCanvasMouseDown(event) {
-            let clientX, clientY;
-            if (event.touches) {
-                clientX = event.touches[0].clientX;
-                clientY = event.touches[0].clientY;
-            } else {
-                clientX = event.clientX;
-                clientY = event.clientY;
-            }
+        mouse.x = (clientX / window.innerWidth)*2 - 1;
+        mouse.y = -(clientY / window.innerHeight)*2 + 1;
+        raycaster.setFromCamera(mouse, camera);
 
-            mouse.x = (clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(mouse, camera);
+        const strudelTargets = [];
+        scene.traverse(child => {
+            if (child.userData && child.userData.isStrudelScreen) strudelTargets.push(child);
+        });
+        const strudelIntersects = raycaster.intersectObjects(strudelTargets, true);
+        if (strudelIntersects.length > 0) {
+            openStrudelEditor();
+            if (event.stopPropagation) event.stopPropagation();
+            if (event.preventDefault) event.preventDefault();
+            return;
+        }
 
-            // Проверяем пересечение с экраном Strudel в первую очередь
-            const strudelTargets = [];
-            scene.traverse(child => {
-                if (child.userData && child.userData.isStrudelScreen) {
-                    strudelTargets.push(child);
-                }
-            });
-            const strudelIntersects = raycaster.intersectObjects(strudelTargets, true);
-            if (strudelIntersects.length > 0) {
-                openStrudelEditor();
+        const targets = [];
+        players.forEach(p => { if(p.model && !p.loading) targets.push(p.model); });
+        const intersects = raycaster.intersectObjects(targets, true);
+        if (intersects.length > 0) {
+            let obj = intersects[0].object;
+            while (obj.parent && !obj.userData.playerId) obj = obj.parent;
+            if (obj.userData.playerId) {
+                const pid = obj.userData.playerId;
+                const p = players.get(pid);
+                const menu = document.getElementById('interaction-menu');
+                document.getElementById('target-name').innerText = p.nick;
+                let left = clientX;
+                let top = clientY;
+                const menuWidth = isMobile ? 120 : 140;
+                const menuHeight = isMobile ? 140 : 160;
+                if (left + menuWidth > window.innerWidth) left = window.innerWidth - menuWidth - 10;
+                if (top + menuHeight > window.innerHeight) top = window.innerHeight - menuHeight - 10;
+                left = Math.max(10, left);
+                top = Math.max(10, top);
+                menu.style.left = left + 'px';
+                menu.style.top = top + 'px';
+                menu.style.display = 'block';
+                currentTargetId = pid;
+                currentTargetNick = p.nick;
                 if (event.stopPropagation) event.stopPropagation();
                 if (event.preventDefault) event.preventDefault();
-                return;
-            }
-
-            // Проверяем пересечение с игроками
-            const targets = [];
-            players.forEach(p => { if (p.model && !p.loading) targets.push(p.model); });
-            const intersects = raycaster.intersectObjects(targets, true);
-            if (intersects.length > 0) {
-                let obj = intersects[0].object;
-                while (obj.parent && !obj.userData.playerId) obj = obj.parent;
-                if (obj.userData.playerId) {
-                    const pid = obj.userData.playerId;
-                    const p = players.get(pid);
-                    const menu = document.getElementById('interaction-menu');
-                    document.getElementById('target-name').innerText = p.nick;
-                    let left = clientX;
-                    let top = clientY;
-                    const menuWidth = isMobile ? 120 : 140;
-                    const menuHeight = isMobile ? 140 : 160;
-                    if (left + menuWidth > window.innerWidth) left = window.innerWidth - menuWidth - 10;
-                    if (top + menuHeight > window.innerHeight) top = window.innerHeight - menuHeight - 10;
-                    left = Math.max(10, left);
-                    top = Math.max(10, top);
-                    menu.style.left = left + 'px';
-                    menu.style.top = top + 'px';
-                    menu.style.display = 'block';
-                    currentTargetId = pid;
-                    currentTargetNick = p.nick;
-                    if (event.stopPropagation) event.stopPropagation();
-                    if (event.preventDefault) event.preventDefault();
-                }
             }
         }
+    }
 
-        function updateLocal(delta) {
-            if (!localModel) return;
-            const isMoving = keys.w || keys.a || keys.s || keys.d;
-            const currentAnim = isMoving ? (keys.shift ? 'run' : 'walk') : 'idle';
-            Object.keys(localActions).forEach(k => {
-                const act = localActions[k];
-                if (act) act.setEffectiveWeight(THREE.MathUtils.lerp(act.getEffectiveWeight(), k ===
-                    currentAnim ? 1 : 0, delta * 10));
-            });
-            if (isMoving) {
-                const angle = Math.atan2(camera.position.x - localModel.position.x, camera.position.z - localModel
-                    .position.z);
-                let offset = 0;
-                if (keys.w) {
-                    if (keys.a) offset = Math.PI / 4;
-                    else if (keys.d) offset = -Math.PI / 4;
-                } else if (keys.s) {
-                    if (keys.a) offset = Math.PI * 0.75;
-                    else if (keys.d) offset = -Math.PI * 0.75;
-                    else offset = Math.PI;
-                } else if (keys.a) offset = Math.PI / 2;
-                else if (keys.d) offset = -Math.PI / 2;
-                rotateQuaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), angle + offset + Math.PI);
-                localModel.quaternion.rotateTowards(rotateQuaternion, 0.2);
-                const speed = keys.shift ? 6 : 2.5;
-                walkDirection.set(0, 0, 1).applyQuaternion(localModel.quaternion);
-                localModel.position.addScaledVector(walkDirection, speed * delta);
+    function updateLocal(delta) {
+        if (!localModel) return;
+        const isMoving = keys.w || keys.a || keys.s || keys.d;
+        const currentAnim = isMoving ? (keys.shift ? 'run' : 'walk') : 'idle';
+        Object.keys(localActions).forEach(k => {
+            const act = localActions[k];
+            if (act) act.setEffectiveWeight(THREE.MathUtils.lerp(act.getEffectiveWeight(), k === currentAnim ? 1 : 0, delta*10));
+        });
+        if (isMoving) {
+            const angle = Math.atan2(camera.position.x - localModel.position.x, camera.position.z - localModel.position.z);
+            let offset = 0;
+            if (keys.w) {
+                if (keys.a) offset = Math.PI/4; else if (keys.d) offset = -Math.PI/4;
+            } else if (keys.s) {
+                if (keys.a) offset = Math.PI*0.75; else if (keys.d) offset = -Math.PI*0.75; else offset = Math.PI;
+            } else if (keys.a) offset = Math.PI/2; else if (keys.d) offset = -Math.PI/2;
+            rotateQuaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), angle + offset + Math.PI);
+            localModel.quaternion.rotateTowards(rotateQuaternion, 0.2);
+            const speed = keys.shift ? 6 : 2.5;
+            walkDirection.set(0,0,1).applyQuaternion(localModel.quaternion);
+            localModel.position.addScaledVector(walkDirection, speed * delta);
+        }
+        cameraTarget.set(localModel.position.x, localModel.position.y+1.5, localModel.position.z);
+        controls.target.lerp(cameraTarget, 0.1);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        const elapsedTime = clock.getElapsedTime();
+
+        if (localMixer) localMixer.update(delta);
+        updateLocal(delta);
+
+        players.forEach(p => {
+            if (p.loading || !p.model) return;
+            const sprite = p.messageIconSprite;
+            if (sprite) {
+                const scale = 1.2 + 0.1 * Math.sin(elapsedTime * 6);
+                sprite.scale.set(scale, scale, 1);
             }
-            cameraTarget.set(localModel.position.x, localModel.position.y + 1.5, localModel.position.z);
-            controls.target.lerp(cameraTarget, 0.1);
-        }
+            p.mixer?.update(delta);
+            if (!p.loading && p.model) {
+                p.model.position.lerp(p.targetPos, 0.2);
+                p.model.quaternion.slerp(p.targetRot, 0.2);
+                Object.keys(p.actions).forEach(k => {
+                    const act = p.actions[k];
+                    if (act) act.setEffectiveWeight(THREE.MathUtils.lerp(act.getEffectiveWeight(), k === p.targetAnim ? 1 : 0, delta*10));
+                });
+            }
+        });
 
-        function animate() {
-            requestAnimationFrame(animate);
-            const delta = clock.getDelta();
-            const elapsedTime = clock.getElapsedTime();
+        const neonPulse = 0.7 + 0.3 * Math.sin(elapsedTime * 3);
+        scene.traverse(child => {
+            if (child.userData && child.userData.isStrudelScreen && child.material && child.material.color && child.material.color.getHex() === 0xff9800) {
+                child.material.opacity = neonPulse;
+                child.material.transparent = true;
+            }
+        });
 
-            if (localMixer) localMixer.update(delta);
-            updateLocal(delta);
-
-            players.forEach(p => {
-                if (p.loading || !p.model) return;
-                const sprite = p.messageIconSprite;
-                if (sprite) {
-                    const scale = 1.2 + 0.1 * Math.sin(elapsedTime * 6);
-                    sprite.scale.set(scale, scale, 1);
-                }
-                p.mixer?.update(delta);
-                if (!p.loading && p.model) {
-                    p.model.position.lerp(p.targetPos, 0.2);
-                    p.model.quaternion.slerp(p.targetRot, 0.2);
-                    Object.keys(p.actions).forEach(k => {
-                        const act = p.actions[k];
-                        if (act) act.setEffectiveWeight(THREE.MathUtils.lerp(act.getEffectiveWeight(), k ===
-                            p.targetAnim ? 1 : 0, delta * 10));
-                    });
-                }
-            });
-
-            // Анимация неоновой подсветки экрана
-            const neonPulse = 0.7 + 0.3 * Math.sin(elapsedTime * 3);
-            scene.traverse(child => {
-                if (child.userData && child.userData.isStrudelScreen && child.material && child.material
-                    .color && child.material.color.getHex() === 0xff9800) {
-                    child.material.opacity = neonPulse;
-                    child.material.transparent = true;
-                }
-            });
-
-            controls.update();
-            renderer.render(scene, camera);
-        }
-    </script>
+        controls.update();
+        renderer.render(scene, camera);
+    }
+</script>
 </body>
 </html>
