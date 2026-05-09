@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>3D Multiplayer – WebSocket (v18)</title>
+    <title>3D Multiplayer – WebSocket (v19)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
@@ -39,14 +39,14 @@
             min-width: auto;
         }
         .menu-item {
-            padding: 10px 12px;
+            padding: 10px 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
             transition: background 0.2s;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 18px; /* чуть крупнее иконки */
         }
         .menu-item:hover { background: #f0f7ff; color: #007bff; }
         .menu-item.disabled { color: #ccc; cursor: not-allowed; }
@@ -58,24 +58,6 @@
             color: #666;
             font-size: 14px;
             text-align: center;
-        }
-        /* На мобильных убираем текст у пунктов меню */
-        @media (hover: none) and (pointer: coarse) {
-            #interaction-menu {
-                padding: 5px;
-            }
-            .menu-item {
-                padding: 12px 14px;
-                gap: 0;
-                justify-content: center;
-            }
-            .menu-item span {
-                display: none;
-            }
-            .menu-header {
-                font-size: 13px;
-                padding: 4px 8px 8px;
-            }
         }
 
         #nickname-modal {
@@ -265,6 +247,16 @@
             #mobile-controls {
                 display: flex;
             }
+            #interaction-menu {
+                padding: 5px;
+            }
+            .menu-item {
+                padding: 12px 14px;
+            }
+            .menu-header {
+                font-size: 13px;
+                padding: 4px 8px 8px;
+            }
         }
     </style>
 </head>
@@ -275,10 +267,10 @@
 
 <div id="interaction-menu">
     <div class="menu-header" id="target-name">Игрок</div>
-    <div class="menu-item" onclick="startChat()"><i class="fa-regular fa-comment"></i> <span>Написать сообщение</span></div>
-    <div class="menu-item" onclick="sendFile()"><i class="fa-regular fa-file"></i> <span>Отправить файл</span></div>
-    <div class="menu-item disabled"><i class="fa-solid fa-phone"></i> <span>Голосовой чат (Beta)</span></div>
-    <div class="menu-item disabled"><i class="fa-solid fa-video"></i> <span>Видео звонок (Beta)</span></div>
+    <div class="menu-item" onclick="startChat()"><i class="fa-regular fa-comment"></i></div>
+    <div class="menu-item" onclick="sendFile()"><i class="fa-regular fa-file"></i></div>
+    <div class="menu-item disabled"><i class="fa-solid fa-phone"></i></div>
+    <div class="menu-item disabled"><i class="fa-solid fa-video"></i></div>
 </div>
 
 <div id="nickname-modal">
@@ -321,6 +313,7 @@
     }
 </script>
 
+<!-- Сценарий инициализации и игровой логики без изменений, берем из последней версии v18 -->
 <script type="module">
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -685,8 +678,7 @@
         unreadCounts.set(targetId, 0);
         updateMessageIcon(targetId);
 
-        // Скрываем мобильную панель, чтобы не мешала чату
-        toggleMobilePanel(false);
+        toggleMobilePanel(false); // скрываем панель на мобильных
 
         if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
@@ -712,8 +704,7 @@
         currentTargetId = null;
         currentTargetNick = '';
 
-        // Возвращаем панель управления
-        toggleMobilePanel(true);
+        toggleMobilePanel(true); // возвращаем панель
     };
 
     window.sendChatMessage = () => {
@@ -879,8 +870,8 @@
                 // Позиционирование с учётом границ экрана
                 let left = clientX;
                 let top = clientY;
-                const menuWidth = isMobile ? 120 : 180; // примерно
-                const menuHeight = isMobile ? 150 : 180;
+                const menuWidth = isMobile ? 120 : 140;
+                const menuHeight = isMobile ? 140 : 160;
                 if (left + menuWidth > window.innerWidth) left = window.innerWidth - menuWidth - 10;
                 if (top + menuHeight > window.innerHeight) top = window.innerHeight - menuHeight - 10;
                 left = Math.max(10, left);
