@@ -101,7 +101,24 @@
             position: relative;
             z-index: 2;
             text-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
-            min-width: auto;
+        }
+
+        /* курсор мигающий */
+        .cursor-blink {
+            display: inline-block;
+            animation: blink 0.8s step-end infinite;
+            font-weight: 400;
+            color: var(--cyan);
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* стили для отдельных символов брутфорса */
+        .brute-char {
+            display: inline-block;
+            transition: color 0.1s ease;
         }
 
         /* Адаптивный логотип для маленьких экранов */
@@ -174,7 +191,6 @@
             background: rgba(0, 0, 0, 0.45);
         }
 
-        /* Контент сцены */
         .content {
             position: relative;
             z-index: 2;
@@ -224,7 +240,6 @@
             white-space: nowrap;
             overflow-wrap: break-word;
         }
-        /* Для заголовка HARD RESET отдельно, чтобы не переносился */
         .main-title {
             white-space: nowrap;
             letter-spacing: 0.1em;
@@ -266,7 +281,6 @@
             display: block;
         }
 
-        /* Стили для анимации символов */
         .char-animate {
             display: inline-block;
             opacity: 0;
@@ -310,7 +324,6 @@
             .eye-icon {
                 font-size: 2.5rem;
             }
-            /* разрешаем заголовку переноситься, если совсем не влезает, но с нормальным видом */
             .main-title {
                 white-space: normal;
                 word-break: break-word;
@@ -344,7 +357,6 @@
             .eye-icon {
                 font-size: 2rem;
             }
-            /* Логотип ещё уменьшим */
             .logo {
                 transform: scale(0.7);
                 top: 0.5rem;
@@ -354,14 +366,12 @@
     </style>
 </head>
 <body>
-    <!-- Логотип (иконка + текст без "_") -->
     <a href="#" class="logo">
         <img src="https://qfoldit.github.io/assets/qTrminal.svg" alt="qTrminal icon" class="logo-icon">
         <span class="logo-text" id="logoText"></span>
     </a>
 
     <div class="story-container" id="storyContainer">
-        <!-- СЦЕНА 1: ГЛАВНЫЙ ЭКРАН -->
         <section class="scene scene--poster active" data-index="0">
             <div class="content">
                 <h2 class="code-text main-title" style="font-size: clamp(2.5rem, 12vw, 6rem); margin:0.4rem 0; text-shadow: 0 0 30px #00f0ff;">HARD RESET</h2>
@@ -375,7 +385,6 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 2: УВОЛЬНЕНИЕ -->
         <section class="scene scene--downfall" data-index="1">
             <div class="content">
                 <span class="tag-text">уволены</span>
@@ -391,7 +400,6 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 3: ЦИФРОВОЙ ЛЮКС -->
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
                 <span class="tag-text" style="font-size:2.5rem;">web3 • сингапур • майами</span>
@@ -404,7 +412,6 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 4: ФИНАЛЬНЫЙ ТИЗЕР -->
         <section class="scene scene--finale" data-index="3">
             <div class="content">
                 <span class="eye-icon">⌬</span>
@@ -426,8 +433,7 @@
 
     <script>
         (function() {
-            // ---------- BRUTE FORCE LOGO ANIMATION (без "_") ----------
-            const targetString = "system restore initiated"; // убран символ "_"
+            const targetString = "system restore initiated";
             const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
             const logoTextEl = document.getElementById('logoText');
             
@@ -436,57 +442,62 @@
                 for (let i = 0; i < targetString.length; i++) {
                     const span = document.createElement('span');
                     span.className = 'brute-char';
-                    span.textContent = characters[Math.floor(Math.random() * characters.length)];
+                    span.style.opacity = '0'; // изначально невидимы
+                    span.textContent = targetString[i]; // сразу ставим правильный символ, но будем менять
                     span.dataset.target = targetString[i];
                     span.dataset.index = i;
                     logoTextEl.appendChild(span);
                 }
-                // курсор не добавляем, так как "_" убран
+                // курсор
+                const cursorSpan = document.createElement('span');
+                cursorSpan.className = 'cursor-blink';
+                cursorSpan.textContent = '_';
+                logoTextEl.appendChild(cursorSpan);
             }
 
             function bruteForceReveal() {
                 const spans = logoTextEl.querySelectorAll('.brute-char');
                 const total = spans.length;
-                const indices = Array.from({ length: total }, (_, i) => i);
-                // асимметричный порядок
-                for (let i = indices.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                let currentIndex = 0;
+
+                function revealNext() {
+                    if (currentIndex >= total) return;
+                    const span = spans[currentIndex];
+                    const targetChar = span.dataset.target;
+                    span.style.opacity = '1'; // делаем видимым
+                    let iterations = 0;
+                    const maxIter = 8 + Math.floor(Math.random() * 10);
+                    const interval = setInterval(() => {
+                        span.textContent = characters[Math.floor(Math.random() * characters.length)];
+                        iterations++;
+                        if (iterations >= maxIter) {
+                            clearInterval(interval);
+                            span.textContent = targetChar;
+                            span.style.color = 'var(--magenta)';
+                            setTimeout(() => {
+                                span.style.color = 'var(--cyan)';
+                            }, 80);
+                            currentIndex++;
+                            // асимметричная задержка перед следующим символом
+                            const nextDelay = 0.05 + Math.random() * 0.2;
+                            setTimeout(revealNext, nextDelay * 1000);
+                        }
+                    }, 40);
                 }
 
-                indices.forEach((originalIndex) => {
-                    const delay = originalIndex * 0.08 + Math.random() * 0.2;
-                    const span = spans[originalIndex];
-                    const targetChar = span.dataset.target;
-
-                    setTimeout(() => {
-                        let iterations = 0;
-                        const maxIter = 8 + Math.floor(Math.random() * 10);
-                        const interval = setInterval(() => {
-                            span.textContent = characters[Math.floor(Math.random() * characters.length)];
-                            iterations++;
-                            if (iterations >= maxIter) {
-                                clearInterval(interval);
-                                span.textContent = targetChar;
-                                span.style.color = 'var(--magenta)';
-                                setTimeout(() => {
-                                    span.style.color = 'var(--cyan)';
-                                }, 80);
-                            }
-                        }, 40);
-                    }, delay * 1000);
-                });
+                // небольшая начальная задержка
+                setTimeout(revealNext, 200);
             }
 
             buildLogoSpans();
-            setTimeout(bruteForceReveal, 300);
+            bruteForceReveal();
 
-            // ---------- СКРОЛЛ-ЛОГИКА И АНИМАЦИЯ ТЕКСТА СЦЕН ----------
+            // ---------- СКРОЛЛ-ЛОГИКА ----------
             const container = document.getElementById('storyContainer');
             const scenes = document.querySelectorAll('.scene');
 
             function animateTextNodes(rootElement) {
-                const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn):not(.brute-char), .tag-text, .code-text');
+                const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn):not(.brute-char):not(.cursor-blink), .tag-text, .code-text');
                 textElements.forEach(el => {
                     if (el.classList.contains('animated-text')) return;
                     if (!el.textContent.trim()) return;
@@ -565,7 +576,7 @@
                 setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset: logo "system restore initiated" without underscore. Mobile optimizations applied.');
+            console.log('Hard Reset: terminal-typewriter brute force logo active.');
         })();
     </script>
 </body>
