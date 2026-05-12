@@ -14,7 +14,6 @@
     <meta name="twitter:description" content="Четыре уволенных IT-специалиста строят теневую империю. Тизер уже доступен.">
     <meta name="twitter:image" content="https://geekandmorty.github.io/img/hard_reset.png">
     <link rel="icon" href="https://qfoldit.github.io/assets/qTrminal.svg" type="image/svg+xml">
-    <!-- Шрифты: Inter + JetBrains Mono + Road Rage -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=JetBrains+Mono:wght@400;700&family=Road+Rage&display=swap" rel="stylesheet">
@@ -98,11 +97,27 @@
             font-weight: 700;
             color: var(--cyan);
             letter-spacing: 1.8px;
-            text-transform: lowercase;
             white-space: nowrap;
             position: relative;
             z-index: 2;
             text-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
+            min-width: 280px;
+        }
+
+        /* курсор мигающий */
+        .cursor-blink {
+            display: inline-block;
+            animation: blink 0.8s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* стили для отдельных символов брутфорса */
+        .brute-char {
+            display: inline-block;
+            transition: color 0.1s ease;
         }
 
         /* === СКРОЛЛ-КОНТЕЙНЕР === */
@@ -133,7 +148,6 @@
             background-repeat: no-repeat;
         }
 
-        /* Фоны сцен */
         .scene--poster {
             background-image: url('https://geekandmorty.github.io/img/hr_hero_1.png');
         }
@@ -147,7 +161,6 @@
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
         }
 
-        /* Затемняющий слой */
         .scene::after {
             content: '';
             position: absolute;
@@ -159,7 +172,6 @@
             background: rgba(0, 0, 0, 0.45);
         }
 
-        /* Контент сцены */
         .content {
             position: relative;
             z-index: 2;
@@ -175,7 +187,6 @@
             transform: translateY(0);
         }
 
-        /* === ТИПОГРАФИКА (все текстовые блоки будут анимированы через JS) === */
         .code-text {
             font-family: 'JetBrains Mono', monospace;
             color: var(--cyan);
@@ -241,7 +252,6 @@
             display: block;
         }
 
-        /* Анимированные символы — базовое состояние до старта */
         .char-animate {
             display: inline-block;
             opacity: 0;
@@ -255,7 +265,6 @@
             transform: translateY(0) scale(1);
         }
 
-        /* Дополнительный глитч-эффект для отдельных символов (будет добавляться случайно) */
         .char-glitch {
             animation: charGlitch 0.2s ease forwards;
         }
@@ -267,14 +276,13 @@
     </style>
 </head>
 <body>
-    <!-- Логотип (без символа ">") -->
+    <!-- Логотип (текст будет полностью формироваться JS-анимацией) -->
     <a href="#" class="logo">
         <img src="https://qfoldit.github.io/assets/qTrminal.svg" alt="qTrminal icon" class="logo-icon">
-        <span class="logo-text">system restore initiated_</span>
+        <span class="logo-text" id="logoText"></span>
     </a>
 
     <div class="story-container" id="storyContainer">
-        <!-- СЦЕНА 1: ГЛАВНЫЙ HERO -->
         <section class="scene scene--poster active" data-index="0">
             <div class="content">
                 <h2 class="code-text" style="font-size: clamp(3.5rem, 11vw, 7.5rem); margin:0.4rem 0; text-shadow: 0 0 30px #00f0ff;">HARD RESET</h2>
@@ -288,7 +296,6 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 2: ПАДЕНИЕ / УВОЛЬНЕНИЕ -->
         <section class="scene scene--downfall" data-index="1">
             <div class="content">
                 <span class="tag-text">уволены</span>
@@ -304,7 +311,6 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 3: ЦИФРОВОЙ ЛЮКС / ВОСПОМИНАНИЯ -->
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
                 <span class="tag-text" style="font-size:2.5rem;">web3 • сингапур • майами</span>
@@ -317,7 +323,6 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 4: ФИНАЛЬНЫЙ ТИЗЕР / СБОР КОМАНДЫ -->
         <section class="scene scene--finale" data-index="3">
             <div class="content">
                 <span class="eye-icon">⌬</span>
@@ -339,22 +344,86 @@
 
     <script>
         (function() {
+            // ---------- BRUTE FORCE LOGO ANIMATION ----------
+            const targetString = "system restore initiated_";
+            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
+            const logoTextEl = document.getElementById('logoText');
+            
+            // Создаем массив span с символами и курсором
+            function buildLogoSpans() {
+                logoTextEl.innerHTML = '';
+                for (let i = 0; i < targetString.length; i++) {
+                    const span = document.createElement('span');
+                    span.className = 'brute-char';
+                    span.textContent = characters[Math.floor(Math.random() * characters.length)];
+                    span.dataset.target = targetString[i];
+                    span.dataset.index = i;
+                    logoTextEl.appendChild(span);
+                }
+                // добавляем мигающий курсор отдельно (уже не как символ подчеркивания)
+                const cursorSpan = document.createElement('span');
+                cursorSpan.className = 'cursor-blink';
+                cursorSpan.textContent = '_';
+                logoTextEl.appendChild(cursorSpan);
+            }
+
+            // Функция brute-force раскрытия символов
+            function bruteForceReveal() {
+                const spans = logoTextEl.querySelectorAll('.brute-char');
+                const total = spans.length;
+                // случайный порядок индексов для асимметрии
+                const indices = Array.from({ length: total }, (_, i) => i);
+                // перемешиваем
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+
+                indices.forEach((originalIndex, order) => {
+                    const delay = originalIndex * 0.08 + Math.random() * 0.2; // асимметричный тайминг
+                    const span = spans[originalIndex];
+                    const targetChar = span.dataset.target;
+
+                    setTimeout(() => {
+                        // запускаем цикл случайных смен символов перед остановкой на целевом
+                        let iterations = 0;
+                        const maxIter = 8 + Math.floor(Math.random() * 10);
+                        const interval = setInterval(() => {
+                            span.textContent = characters[Math.floor(Math.random() * characters.length)];
+                            iterations++;
+                            if (iterations >= maxIter) {
+                                clearInterval(interval);
+                                span.textContent = targetChar;
+                                // добавляем эффект глитча при раскрытии
+                                span.style.color = 'var(--magenta)';
+                                setTimeout(() => {
+                                    span.style.color = 'var(--cyan)';
+                                }, 80);
+                            }
+                        }, 40);
+                    }, delay * 1000);
+                });
+
+                // когда все символы раскрыты (примерно через максимальную задержку + время итераций), курсор продолжает мигать
+                const maxDelay = (total - 1) * 0.08 + 0.2 + 0.6; // примерно
+                setTimeout(() => {
+                    // курсор уже мигает, ничего не делаем
+                }, maxDelay * 1000);
+            }
+
+            buildLogoSpans();
+            setTimeout(bruteForceReveal, 300);
+
+            // ---------- СКРОЛЛ-ЛОГИКА И АНИМАЦИЯ ТЕКСТА СЦЕН (СОХРАНЕНО) ----------
             const container = document.getElementById('storyContainer');
             const scenes = document.querySelectorAll('.scene');
 
-            // ---------- АСИММЕТРИЧНАЯ АНИМАЦИЯ ТЕКСТА (CRYPTO/ENCRYPT/DECRYPT EFFECT) ----------
             function animateTextNodes(rootElement) {
-                // Находим все текстовые блоки внутри контента сцены, исключая кнопки (у них свой стиль)
                 const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn), .tag-text, .code-text');
-                
                 textElements.forEach(el => {
-                    // Пропускаем элементы, которые уже обработаны или не содержат текста
                     if (el.classList.contains('animated-text')) return;
                     if (!el.textContent.trim()) return;
-                    
                     el.classList.add('animated-text');
-                    
-                    // Извлекаем текстовые узлы и заменяем их на span.char-animate
                     const childNodes = Array.from(el.childNodes);
                     childNodes.forEach(node => {
                         if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
@@ -363,39 +432,30 @@
                             chars.forEach((char, index) => {
                                 const span = document.createElement('span');
                                 span.className = 'char-animate';
-                                span.textContent = char === ' ' ? '\u00A0' : char; // неразрывный пробел для визуального пробела
-                                span.style.transitionDelay = `${Math.random() * 0.6 + index * 0.03}s`; // асимметричный тайминг
+                                span.textContent = char === ' ' ? '\u00A0' : char;
+                                span.style.transitionDelay = `${Math.random() * 0.6 + index * 0.03}s`;
                                 fragment.appendChild(span);
                             });
                             node.replaceWith(fragment);
                         } else if (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains('char-animate')) {
-                            // Рекурсивно обрабатываем вложенные элементы (например, span.highlight)
                             animateTextNodes(node);
                         }
                     });
                 });
             }
 
-            // Функция раскрытия символов (reveal) с асимметрией и случайными глитчами
             function revealCharacters(containerElement) {
                 const chars = containerElement.querySelectorAll('.char-animate:not(.revealed)');
                 if (chars.length === 0) return;
-                
-                // Перемешиваем индексы для асимметричного появления
                 const indices = Array.from({ length: chars.length }, (_, i) => i);
-                // Сортируем с элементами случайности, но сохраняя общий порядок для читаемости
                 indices.sort((a, b) => (a + Math.random() * 0.5) - (b + Math.random() * 0.5));
-                
-                indices.forEach((originalIndex, order) => {
+                indices.forEach((originalIndex) => {
                     const span = chars[originalIndex];
-                    const baseDelay = originalIndex * 0.04; // базовая задержка по порядку
-                    const randomOffset = Math.random() * 0.4; // случайный сдвиг до 0.4с
+                    const baseDelay = originalIndex * 0.04;
+                    const randomOffset = Math.random() * 0.4;
                     const totalDelay = baseDelay + randomOffset;
-                    
                     setTimeout(() => {
                         span.classList.add('revealed');
-                        
-                        // Случайный глитч-эффект для 15% символов
                         if (Math.random() < 0.15) {
                             span.classList.add('char-glitch');
                             setTimeout(() => span.classList.remove('char-glitch'), 250);
@@ -404,30 +464,22 @@
                 });
             }
 
-            // Инициализация анимации для конкретной сцены
             function initSceneAnimation(scene) {
                 const content = scene.querySelector('.content');
                 if (!content) return;
-                // Сначала анимируем текстовые узлы (разбиваем на символы)
                 animateTextNodes(content);
-                // Затем запускаем reveal с небольшой задержкой, чтобы DOM обновился
                 setTimeout(() => revealCharacters(content), 50);
             }
 
-            // ---------- УПРАВЛЕНИЕ АКТИВНОЙ СЦЕНОЙ И СКРОЛЛОМ ----------
             function updateActiveScene() {
                 const scrollTop = container.scrollTop;
                 const windowHeight = window.innerHeight;
                 const activeIndex = Math.round(scrollTop / windowHeight);
-                
-                let sceneActivated = false;
                 scenes.forEach((scene, idx) => {
                     if (idx === activeIndex) {
                         if (!scene.classList.contains('active')) {
                             scene.classList.add('active');
-                            // Запускаем анимацию текста при первой активации
                             initSceneAnimation(scene);
-                            sceneActivated = true;
                         }
                     } else {
                         scene.classList.remove('active');
@@ -435,12 +487,10 @@
                 });
             }
 
-            // Первичная инициализация для уже активной сцены
             const initialActive = document.querySelector('.scene.active');
             if (initialActive) {
                 initSceneAnimation(initialActive);
             }
-            
             updateActiveScene();
 
             container.addEventListener('scroll', updateActiveScene, { passive: true });
@@ -448,7 +498,7 @@
                 setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset: crypto/decrypt text animation active. System restored.');
+            console.log('Hard Reset: brute force logo animation active. System restored.');
         })();
     </script>
 </body>
