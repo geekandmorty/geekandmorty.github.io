@@ -14,7 +14,7 @@
     <meta name="twitter:description" content="Четыре уволенных IT-специалиста строят теневую империю. Тизер уже доступен.">
     <meta name="twitter:image" content="https://geekandmorty.github.io/img/hard_reset.png">
     <link rel="icon" href="https://qfoldit.github.io/assets/qTrminal.svg" type="image/svg+xml">
-    <!-- Подключаем шрифты -->
+    <!-- Шрифты -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=JetBrains+Mono:wght@400;700&family=Road+Rage&display=swap" rel="stylesheet">
@@ -31,19 +31,35 @@
             overflow: hidden;
         }
 
-        /* Логотип */
+        /* Логотип с текстом */
         .logo {
             position: fixed;
             top: 1.5rem;
             left: 1.5rem;
             z-index: 100;
-            width: 52px;
-            height: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
             filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
             transition: opacity 0.3s ease;
+            text-decoration: none;
         }
         .logo:hover {
             opacity: 0.8;
+        }
+        .logo-icon {
+            width: 46px;
+            height: auto;
+            display: block;
+        }
+        .logo-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #00f0ff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
 
         /* Скролл-контейнер */
@@ -76,13 +92,13 @@
 
         /* Фоны сцен */
         .scene--poster {
-            background-image: url('https://geekandmorty.github.io/img/hard_reset.png');
+            background-image: url('https://geekandmorty.github.io/img/hr_hero_1.png');
         }
         .scene--downfall {
-            background: radial-gradient(circle at 20% 30%, #2a2a2e, #0b0b0d);
+            background-image: url('https://geekandmorty.github.io/img/hr_2.png');
         }
         .scene--flashback {
-            background: radial-gradient(circle at 80% 70%, #1a1c2b, #030303);
+            background-image: url('https://geekandmorty.github.io/img/hr_3.png');
         }
         .scene--finale {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
@@ -182,17 +198,19 @@
     </style>
 </head>
 <body>
-    <!-- Логотип -->
-    <img src="https://qfoldit.github.io/assets/qTrminal.svg" alt="qTrminal logo" class="logo">
+    <!-- Логотип (иконка + текст "> system restore initiated_") -->
+    <a href="#" class="logo">
+        <img src="https://qfoldit.github.io/assets/qTrminal.svg" alt="qTrminal icon" class="logo-icon">
+        <span class="logo-text">> system restore initiated_</span>
+    </a>
 
     <div class="story-container" id="storyContainer">
-        <!-- Сцена 1 -->
+        <!-- СЦЕНА 1: ГЛАВНЫЙ ЭКРАН (без строки "> system restore initiated_") -->
         <section class="scene scene--poster active" data-index="0">
             <div class="content">
-                <span class="code-text" style="font-size:1rem;">> system restore initiated_</span>
                 <h2 class="code-text" style="font-size: clamp(3rem, 10vw, 7rem); margin:0.5rem 0; text-shadow: 0 0 25px #00f0ff;">HARD RESET</h2>
                 <div class="glitch-line"></div>
-                <p class="body-text" style="max-width: 650px; margin: 0 auto;">
+                <p class="body-text" style="max-width: 650px; margin: 0 auto; font-size: 1.4rem;">
                     Четыре айтишника, выброшенные индустрией.<br>
                     Одна последняя сделка.<br>
                     <span class="highlight">Их код изменит всё.</span>
@@ -201,7 +219,7 @@
             </div>
         </section>
 
-        <!-- Сцена 2 -->
+        <!-- СЦЕНА 2: УВОЛЬНЕНИЕ -->
         <section class="scene scene--downfall" data-index="1">
             <div class="content">
                 <span class="tag-text">уволены</span>
@@ -217,7 +235,7 @@
             </div>
         </section>
 
-        <!-- Сцена 3 -->
+        <!-- СЦЕНА 3: ЦИФРОВОЙ ЛЮКС -->
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
                 <span class="tag-text" style="font-size:2.5rem;">web3 • сингапур • майами</span>
@@ -230,7 +248,7 @@
             </div>
         </section>
 
-        <!-- Сцена 4 -->
+        <!-- СЦЕНА 4: ФИНАЛЬНЫЙ ТИЗЕР -->
         <section class="scene scene--finale" data-index="3">
             <div class="content">
                 <span class="eye-icon">⌬</span>
