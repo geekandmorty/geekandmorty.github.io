@@ -3,8 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hard Reset — Original Series</title>
-    <!-- Подключаем шрифты из утверждённой концепции -->
+    <title>Hard Reset — Netflix Original Series</title>
+    <meta name="description" content="Четыре уволенных IT-специалиста объединяются, чтобы выжить в мире, который их выбросил. Криминальная трагикомедия о дружбе, коде и цифровом возмездии. Смотрим тизер.">
+    <meta property="og:title" content="Hard Reset — Original Netflix Series">
+    <meta property="og:description" content="У них нет работы, но остались навыки, пароли и паяльники. Идеальный преступный механизм рождается из руин IT-индустрии.">
+    <meta property="og:image" content="https://federalserviceunconscious.github.io/img/hard_reset.png">
+    <meta property="og:url" content="https://netflix.com/hard-reset">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Hard Reset — Original Netflix Series">
+    <meta name="twitter:description" content="Четыре уволенных IT-специалиста строят теневую империю. Тизер уже доступен.">
+    <meta name="twitter:image" content="https://federalserviceunconscious.github.io/img/hard_reset.png">
+    <link rel="icon" href="https://qfoldit.github.io/assets/qTrminal.svg" type="image/svg+xml">
+    <!-- Подключаем шрифты -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=JetBrains+Mono:wght@400;700&family=Road+Rage&display=swap" rel="stylesheet">
@@ -18,16 +28,30 @@
         body {
             background: #0a0a0a;
             font-family: 'Inter', sans-serif;
-            overflow: hidden; /* убираем скроллбар окна */
+            overflow: hidden;
         }
 
-        /* Основной скролл-контейнер */
+        /* Логотип */
+        .logo {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 100;
+            width: 52px;
+            height: auto;
+            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
+            transition: opacity 0.3s ease;
+        }
+        .logo:hover {
+            opacity: 0.8;
+        }
+
+        /* Скролл-контейнер */
         .story-container {
             height: 100vh;
             width: 100%;
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
-            /* Скрываем скроллбар кросс-браузерно */
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
@@ -35,7 +59,7 @@
             display: none;
         }
 
-        /* Каждая сцена – на весь экран */
+        /* Сцена */
         .scene {
             height: 100vh;
             width: 100%;
@@ -50,25 +74,21 @@
             background-repeat: no-repeat;
         }
 
-        /* ---------- СЦЕНЫ И ИХ ФОНЫ ---------- */
-        /* Сцена 1: Главный постер (изображение предоставлено) */
+        /* Фоны сцен */
         .scene--poster {
             background-image: url('https://geekandmorty.github.io/img/hard_reset.png');
         }
-        /* Сцена 2: Абстрактный «грязный реал» — пока заглушка */
         .scene--downfall {
             background: radial-gradient(circle at 20% 30%, #2a2a2e, #0b0b0d);
         }
-        /* Сцена 3: Цифровой люкс/неон */
         .scene--flashback {
             background: radial-gradient(circle at 80% 70%, #1a1c2b, #030303);
         }
-        /* Сцена 4: Финальный тизер (можно будет заменить вторым изображением) */
         .scene--finale {
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
         }
 
-        /* Затемняющий слой поверх изображений для читаемости текста */
+        /* Затемнение */
         .scene::after {
             content: '';
             position: absolute;
@@ -76,12 +96,11 @@
             background: rgba(0, 0, 0, 0.55);
             z-index: 1;
         }
-        /* Сцена 1 должна сохранить яркость постера, ослабляем затемнение */
         .scene--poster::after {
             background: rgba(0, 0, 0, 0.45);
         }
 
-        /* Контент сцены поверх затемнения */
+        /* Контент */
         .content {
             position: relative;
             z-index: 2;
@@ -92,13 +111,12 @@
             transform: translateY(30px);
             transition: opacity 0.8s ease, transform 0.8s ease;
         }
-        /* Активное состояние (когда сцена видна) */
         .scene.active .content {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Типографика по ролям */
+        /* Типографика */
         .code-text {
             font-family: 'JetBrains Mono', monospace;
             color: #00f0ff;
@@ -128,12 +146,6 @@
             font-size: clamp(2.5rem, 8vw, 5rem);
             margin-bottom: 0.5rem;
         }
-        .subtitle {
-            font-size: 1.5rem;
-            font-weight: 400;
-            color: #aaa;
-            margin-bottom: 2rem;
-        }
 
         .btn {
             display: inline-block;
@@ -155,7 +167,6 @@
             box-shadow: 0 0 20px #00f0ff;
         }
 
-        /* Декоративные элементы */
         .glitch-line {
             width: 150px;
             height: 2px;
@@ -171,8 +182,11 @@
     </style>
 </head>
 <body>
+    <!-- Логотип -->
+    <img src="https://qfoldit.github.io/assets/qTrminal.svg" alt="qTrminal logo" class="logo">
+
     <div class="story-container" id="storyContainer">
-        <!-- СЦЕНА 1: ГЛАВНЫЙ ПОСТЕР -->
+        <!-- Сцена 1 -->
         <section class="scene scene--poster active" data-index="0">
             <div class="content">
                 <span class="code-text" style="font-size:1rem;">> system restore initiated_</span>
@@ -187,7 +201,7 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 2: ПАДЕНИЕ (СТОРИТЕЛЛИНГ) -->
+        <!-- Сцена 2 -->
         <section class="scene scene--downfall" data-index="1">
             <div class="content">
                 <span class="tag-text">уволены</span>
@@ -203,7 +217,7 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 3: ВОСПОМИНАНИЯ О ВЕЛИЧИИ (НЕОН/ЛЮКС) -->
+        <!-- Сцена 3 -->
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
                 <span class="tag-text" style="font-size:2.5rem;">web3 • сингапур • майами</span>
@@ -216,7 +230,7 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 4: ФИНАЛЬНЫЙ ТИЗЕР (ПЛАЦДАРМ ДЛЯ ВТОРОГО КЛЮЧЕВОГО АРТА) -->
+        <!-- Сцена 4 -->
         <section class="scene scene--finale" data-index="3">
             <div class="content">
                 <span class="eye-icon">⌬</span>
@@ -242,12 +256,10 @@
             const container = document.getElementById('storyContainer');
             const scenes = document.querySelectorAll('.scene');
             
-            // Функция обновления активного класса на основе текущего скролла
             function updateActiveScene() {
                 const scrollTop = container.scrollTop;
                 const windowHeight = window.innerHeight;
                 
-                // Находим индекс ближайшей сцены
                 const activeIndex = Math.round(scrollTop / windowHeight);
                 
                 scenes.forEach((scene, idx) => {
@@ -259,24 +271,15 @@
                 });
             }
 
-            // Начальная установка (первая сцена уже имеет класс active в разметке, но синхронизируем)
             updateActiveScene();
 
-            // Слушаем скролл в контейнере
             container.addEventListener('scroll', updateActiveScene, { passive: true });
 
-            // Дополнительно: предотвращаем рывки при ресайзе
             window.addEventListener('resize', () => {
-                // Небольшая задержка, чтобы пересчёт произошёл после изменения размеров
                 setTimeout(updateActiveScene, 50);
             });
 
-            // Для touch-устройств тоже работает благодаря нативному scroll snap
-
-            // ВАЖНО: когда появится второе изображение, достаточно сменить фон соответствующей сцены.
-            // Например, для сцены 4 (finale) заменить в CSS .scene--finale { background-image: url('второе_изображение.jpg'); }
-            // Или динамически через JS.
-            console.log('Hard Reset Hero ready. Awaiting second key art...');
+            console.log('Hard Reset Hero ready. Second key art slot open...');
         })();
     </script>
 </body>
