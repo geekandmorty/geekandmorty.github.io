@@ -34,6 +34,7 @@
             --grid-color: rgba(0, 240, 255, 0.2);
         }
 
+        /* === ЛОГОТИП С Hi-Tech GRID И СКОШЕННЫМ УГЛОМ === */
         .logo {
             position: fixed;
             top: 1.2rem;
@@ -227,6 +228,24 @@
             font-weight: 600;
         }
 
+        /* Пульсирующий розовый неон */
+        .pulse-magenta {
+            display: inline-block;
+            color: var(--magenta);
+            text-shadow: 0 0 10px var(--magenta);
+            animation: neonPulse 1.5s ease-in-out infinite alternate;
+        }
+        @keyframes neonPulse {
+            0% {
+                color: #ff00c8;
+                text-shadow: 0 0 8px #ff00c8, 0 0 12px #ff00c8;
+            }
+            100% {
+                color: #ff66dd;
+                text-shadow: 0 0 16px #ff00c8, 0 0 24px #ff00c8, 0 0 32px #ff00c8;
+            }
+        }
+
         h2 {
             font-size: clamp(2rem, 8vw, 6rem);
             margin-bottom: 0.5rem;
@@ -333,7 +352,7 @@
                 <p class="body-text" style="max-width: 650px; margin: 0 auto; font-size: 1.4rem;">
                     Четыре айтишника, выброшенные индустрией.<br>
                     Одна последняя сделка.<br>
-                    <span class="highlight">Их код изменит всё.</span>
+                    <span class="highlight pulse-magenta">Их код изменит всё.</span>
                 </p>
                 <a href="#" class="btn">Смотреть тизер</a>
             </div>
@@ -387,7 +406,6 @@
 
     <script>
         (function() {
-            // Универсальная функция брутфорс-анимации с курсором-столбиком
             function createBruteForceAnimation(containerElement, targetString, options = {}) {
                 const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
                 const {
@@ -398,19 +416,17 @@
                 containerElement.innerHTML = '';
                 const spans = [];
 
-                // Создаем span для каждого символа, пробел заменяем на неразрывный
                 for (let i = 0; i < targetString.length; i++) {
                     const span = document.createElement('span');
                     span.className = 'brute-char';
                     span.style.opacity = '0';
                     const char = targetString[i];
-                    span.textContent = char === ' ' ? '\u00A0' : char; // пробел показываем
-                    span.dataset.target = char; // сохраняем исходный символ (может быть пробелом)
+                    span.textContent = char === ' ' ? '\u00A0' : char;
+                    span.dataset.target = char;
                     containerElement.appendChild(span);
                     spans.push(span);
                 }
 
-                // Курсор в виде столбика
                 const cursorSpan = document.createElement('span');
                 cursorSpan.className = 'cursor-blink';
                 cursorSpan.textContent = '█';
@@ -432,7 +448,6 @@
 
                     const targetChar = currentSpan.dataset.target;
 
-                    // Если символ пробел — не брутим, сразу оставляем пробел
                     if (targetChar === ' ') {
                         currentSpan.textContent = '\u00A0';
                         currentSpan.style.color = 'var(--cyan)';
@@ -448,7 +463,7 @@
                         iterations++;
                         if (iterations >= maxIter) {
                             clearInterval(interval);
-                            currentSpan.textContent = targetChar; // для обычных символов просто символ
+                            currentSpan.textContent = targetChar;
                             currentSpan.style.color = 'var(--magenta)';
                             setTimeout(() => {
                                 currentSpan.style.color = 'var(--cyan)';
@@ -463,26 +478,23 @@
                 setTimeout(() => revealNext(0), initialDelay);
             }
 
-            // Логотип с пробелами
             const logoContainer = document.getElementById('logoText');
             createBruteForceAnimation(logoContainer, "system restore initiated", {
                 hideCursorOnMobile: false,
                 initialDelay: 300
             });
 
-            // Заголовок HARD RESET с пробелом
             const titleContainer = document.getElementById('mainTitle');
             createBruteForceAnimation(titleContainer, "HARD RESET", {
                 hideCursorOnMobile: true,
                 initialDelay: 800
             });
 
-            // ---------- Остальная анимация сцен ----------
             const container = document.getElementById('storyContainer');
             const scenes = document.querySelectorAll('.scene');
 
             function animateTextNodes(rootElement) {
-                const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn):not(.brute-char):not(.cursor-blink), .tag-text, .code-text');
+                const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn):not(.brute-char):not(.cursor-blink):not(.pulse-magenta), .tag-text, .code-text');
                 textElements.forEach(el => {
                     if (el.classList.contains('animated-text') || el.id === 'mainTitle') return;
                     if (!el.textContent.trim()) return;
@@ -561,7 +573,7 @@
                 setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset: block cursor, fixed spaces.');
+            console.log('Hard Reset: neon pulse added to key phrase.');
         })();
     </script>
 </body>
