@@ -169,10 +169,10 @@
             background-image: url('https://geekandmorty.github.io/img/hr_2.png');
         }
         .scene--flashback {
-            background-image: url('https://geekandmorty.github.io/img/hr_3.png');
+            background-image: url('https://geekandmorty.github.io/img/hr_4.png');
         }
         .scene--finale {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-image: url('https://geekandmorty.github.io/img/hr_3.png');
         }
 
         .scene::after {
@@ -337,7 +337,7 @@
         }
 
         @media (max-width: 480px) {
-            .scene--poster, .scene--downfall, .scene--flashback { background-position: top; }
+            .scene--poster, .scene--downfall, .scene--flashback, .scene--finale { background-position: top; }
             .content { padding: 1rem 0.8rem; }
             .body-text { font-size: 1.05rem; line-height: 1.55; }
             h2 { font-size: clamp(1.8rem, 11vw, 2.8rem); }
@@ -386,7 +386,7 @@
             </div>
         </section>
 
-        <!-- Сцена 3 -->
+        <!-- Сцена 3: web3 • сингапур • майами -->
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
                 <span class="tag-text">web3 • сингапур • майами</span>
@@ -399,7 +399,7 @@
             </div>
         </section>
 
-        <!-- Сцена 4 -->
+        <!-- Сцена 4: assemble_team.exe -->
         <section class="scene scene--finale" data-index="3">
             <div class="content">
                 <span class="eye-icon">⌬</span>
@@ -490,7 +490,6 @@
                 setTimeout(() => revealNext(0), initialDelay);
             }
 
-            // Брутфорс-анимация для логотипа и заголовка HARD RESET
             const logoContainer = document.getElementById('logoText');
             createBruteForceAnimation(logoContainer, "system restore initiated", {
                 hideCursorOnMobile: false,
@@ -502,9 +501,6 @@
                 hideCursorOnMobile: true,
                 initialDelay: 800
             });
-
-            // Анимация появления подзаголовков без разбивки на символы — просто плавное появление контента
-            // Никакой дополнительной анимации для .body-text не требуется, сцена уже fade-in.
 
             const container = document.getElementById('storyContainer');
             const scenes = document.querySelectorAll('.scene');
@@ -522,7 +518,6 @@
                 });
             }
 
-            // Активируем первую сцену сразу (уже есть active в разметке, но на всякий случай)
             const initialActive = document.querySelector('.scene.active');
             if (!initialActive) {
                 document.querySelector('.scene--poster').classList.add('active');
@@ -534,7 +529,7 @@
                 setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset: ссылка на тизер обновлена.');
+            console.log('Hard Reset: фоны сцен обновлены.');
         })();
     </script>
 </body>
