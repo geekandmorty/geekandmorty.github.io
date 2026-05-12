@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hard Reset — Netflix Original Series</title>
+    <meta name="description" content="Четыре уволенных IT-специалиста объединяются, чтобы выжить в мире, который их выбросил. Криминальная трагикомедия о дружбе, коде и цифровом возмездии. Смотрим тизер.">
+    <meta property="og:title" content="Hard Reset — Original Netflix Series">
+    <meta property="og:description" content="У них нет работы, но остались навыки, пароли и паяльники. Идеальный преступный механизм рождается из руин IT-индустрии.">
+    <meta property="og:image" content="https://geekandmorty.github.io/img/hard_reset.png">
+    <meta property="og:url" content="https://netflix.com/hard-reset">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Hard Reset — Original Netflix Series">
+    <meta name="twitter:description" content="Четыре уволенных IT-специалиста строят теневую империю. Тизер уже доступен.">
+    <meta name="twitter:image" content="https://geekandmorty.github.io/img/hard_reset.png">
+    <link rel="icon" href="https://qfoldit.github.io/assets/qTrminal.svg" type="image/svg+xml">
+    <!-- Подключаем шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=JetBrains+Mono:wght@400;700&family=Road+Rage&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Логотип с текстом */
+        .logo {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
+            transition: opacity 0.3s ease;
+            text-decoration: none;
+        }
+        .logo:hover {
+            opacity: 0.8;
+        }
+        .logo-icon {
+            width: 46px;
+            height: auto;
+            display: block;
+        }
+        .logo-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #00f0ff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* Скролл-контейнер */
+        .story-container {
+            height: 100vh;
+            width: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .story-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Сцена */
+        .scene {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Фоны сцен */
+        .scene--poster {
+            background-image: url('https://geekandmorty.github.io/img/hard_reset.png');
+        }
+        .scene--downfall {
+            background: radial-gradient(circle at 20% 30%, #2a2a2e, #0b0b0d);
+        }
+        .scene--flashback {
+            background: radial-gradient(circle at 80% 70%, #1a1c2b, #030303);
+        }
+        .scene--finale {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+
+        /* Затемнение */
+        .scene::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+        .scene--poster::after {
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        /* Контент */
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .scene.active .content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Типографика */
+        .code-text {
+            font-family: 'JetBrains Mono', monospace;
+            color: #00f0ff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .tag-text {
+            font-family: 'Road Rage', cursive;
+            color: #ff00c8;
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            text-shadow: 0 0 15px rgba(255, 0, 200, 0.7);
+        }
+        .body-text {
+            font-family: 'Inter', sans-serif;
+            color: #e0e0e0;
+            font-size: 1.25rem;
+            line-height: 1.6;
+        }
+        .highlight {
+            color: #00f0ff;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.85rem 2.2rem;
+            border: 2px solid #00f0ff;
+            color: #00f0ff;
+            font-family: 'JetBrains Mono', monospace;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            background: rgba(0, 240, 255, 0.05);
+            margin-top: 1.5rem;
+        }
+        .btn:hover {
+            background: #00f0ff;
+            color: #0a0a0a;
+            box-shadow: 0 0 20px #00f0ff;
+        }
+
+        .glitch-line {
+            width: 150px;
+            height: 2px;
+            background: #ff00c8;
+            margin: 1.5rem auto;
+            box-shadow: 0 0 8px #ff00c8;
+        }
+        .eye-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Логотип (иконка + название) -->
+    <a href="#" class="logo">
+        <img src="https://qfoldit.github.io/assets/qTrminal.svg" alt="qTrminal icon" class="logo-icon">
+        <span class="logo-text">HARD RESET</span>
+    </a>
+
+    <div class="story-container" id="storyContainer">
+        <!-- Сцена 1 (название убрано из центра, оставлен только слоган) -->
+        <section class="scene scene--poster active" data-index="0">
+            <div class="content">
+                <span class="code-text" style="font-size:1rem;">> system restore initiated_</span>
+                <div class="glitch-line"></div>
+                <p class="body-text" style="max-width: 650px; margin: 0 auto; font-size: 1.4rem;">
+                    Четыре айтишника, выброшенные индустрией.<br>
+                    Одна последняя сделка.<br>
+                    <span class="highlight">Их код изменит всё.</span>
+                </p>
+                <a href="#" class="btn">Смотреть тизер</a>
+            </div>
+        </section>
+
+        <!-- Сцена 2 -->
+        <section class="scene scene--downfall" data-index="1">
+            <div class="content">
+                <span class="tag-text">уволены</span>
+                <h2 class="code-text">> pink_slip.txt</h2>
+                <p class="body-text" style="margin-top:1rem;">
+                    Алгоритмы вынесли вердикт раньше, чем HR проснулся.<br>
+                    Тысячи специалистов стали <span class="highlight">цифровыми призраками</span>.<br>
+                    Их опыт списали в утиль.
+                </p>
+                <p class="body-text" style="font-style:italic; margin-top:1.5rem; color:#999;">
+                    «Тебя заменили твоим же кодом. Ирония, да?»
+                </p>
+            </div>
+        </section>
+
+        <!-- Сцена 3 -->
+        <section class="scene scene--flashback" data-index="2">
+            <div class="content">
+                <span class="tag-text" style="font-size:2.5rem;">web3 • сингапур • майами</span>
+                <h2 class="code-text">> sudo remember --all</h2>
+                <p class="body-text" style="margin-top:1rem;">
+                    Частные джеты, бассейны на крышах, обещания «дизраптнуть» реальность.<br>
+                    Теперь это лишь <span class="highlight">битые ссылки</span> в их резюме.<br>
+                    Но кое-что осталось: доступы, ключи, секретные схемы.
+                </p>
+            </div>
+        </section>
+
+        <!-- Сцена 4 (финальный тизер) -->
+        <section class="scene scene--finale" data-index="3">
+            <div class="content">
+                <span class="eye-icon">⌬</span>
+                <h2 class="code-text" style="font-size: clamp(2.5rem, 7vw, 4rem);">> assemble_team.exe</h2>
+                <div class="glitch-line" style="background:#00f0ff; box-shadow:0 0 8px #00f0ff;"></div>
+                <p class="body-text">
+                    <span class="highlight">Макс</span> — Падший CEO. <br>
+                    <span class="highlight">Анна</span> — Кибер-параноик. <br>
+                    <span class="highlight">Дмитрий</span> — Гений данных. <br>
+                    <span class="highlight">Шпунтик</span> — Железо.
+                </p>
+                <p class="body-text" style="margin-top:1rem; font-size:1.1rem;">
+                    Они не стали друзьями. Они стали <span class="highlight">идеальным преступным механизмом</span>.
+                </p>
+                <a href="#" class="btn" style="border-color:#ff00c8; color:#ff00c8;">🔥 Скоро на Netflix</a>
+                <p style="margin-top:2rem; font-size:0.8rem; color:#555;">(второй ключевой арт загружается...)</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        (function() {
+            const container = document.getElementById('storyContainer');
+            const scenes = document.querySelectorAll('.scene');
+            
+            function updateActiveScene() {
+                const scrollTop = container.scrollTop;
+                const windowHeight = window.innerHeight;
+                
+                const activeIndex = Math.round(scrollTop / windowHeight);
+                
+                scenes.forEach((scene, idx) => {
+                    if (idx === activeIndex) {
+                        scene.classList.add('active');
+                    } else {
+                        scene.classList.remove('active');
+                    }
+                });
+            }
+
+            updateActiveScene();
+
+            container.addEventListener('scroll', updateActiveScene, { passive: true });
+
+            window.addEventListener('resize', () => {
+                setTimeout(updateActiveScene, 50);
+            });
+
+            console.log('Hard Reset Hero ready. Second key art slot open...');
+        })();
+    </script>
+</body>
+</html>
