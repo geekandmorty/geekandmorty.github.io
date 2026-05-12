@@ -101,23 +101,25 @@
             position: relative;
             z-index: 2;
             text-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
-            min-width: 280px;
+            min-width: auto;
         }
 
-        /* курсор мигающий */
-        .cursor-blink {
-            display: inline-block;
-            animation: blink 0.8s step-end infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* стили для отдельных символов брутфорса */
-        .brute-char {
-            display: inline-block;
-            transition: color 0.1s ease;
+        /* Адаптивный логотип для маленьких экранов */
+        @media (max-width: 600px) {
+            .logo {
+                top: 0.8rem;
+                left: 0.8rem;
+                gap: 0.4rem;
+                padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+                transform: scale(0.8);
+                transform-origin: top left;
+            }
+            .logo-icon {
+                width: 36px;
+            }
+            .logo-text {
+                font-size: 1rem;
+            }
         }
 
         /* === СКРОЛЛ-КОНТЕЙНЕР === */
@@ -172,21 +174,25 @@
             background: rgba(0, 0, 0, 0.45);
         }
 
+        /* Контент сцены */
         .content {
             position: relative;
             z-index: 2;
             text-align: center;
+            width: 100%;
             max-width: 900px;
-            padding: 2rem;
+            padding: 1.5rem;
             opacity: 0;
             transform: translateY(25px);
             transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+            word-break: break-word;
         }
         .scene.active .content {
             opacity: 1;
             transform: translateY(0);
         }
 
+        /* Типографика */
         .code-text {
             font-family: 'JetBrains Mono', monospace;
             color: var(--cyan);
@@ -213,8 +219,15 @@
         }
 
         h2 {
-            font-size: clamp(2.8rem, 9vw, 6rem);
+            font-size: clamp(2rem, 8vw, 6rem);
             margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow-wrap: break-word;
+        }
+        /* Для заголовка HARD RESET отдельно, чтобы не переносился */
+        .main-title {
+            white-space: nowrap;
+            letter-spacing: 0.1em;
         }
 
         .btn {
@@ -232,6 +245,7 @@
             margin-top: 1.8rem;
             position: relative;
             z-index: 5;
+            white-space: nowrap;
         }
         .btn:hover {
             background: var(--cyan);
@@ -252,6 +266,7 @@
             display: block;
         }
 
+        /* Стили для анимации символов */
         .char-animate {
             display: inline-block;
             opacity: 0;
@@ -273,19 +288,83 @@
             50% { color: var(--magenta); text-shadow: -2px 0 red, 2px 0 blue; }
             100% { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
         }
+
+        /* ========== АДАПТИВНОСТЬ ========== */
+        @media (max-width: 768px) {
+            .tag-text {
+                font-size: 2.5rem;
+            }
+            .body-text {
+                font-size: 1.1rem;
+            }
+            h2 {
+                font-size: clamp(1.8rem, 10vw, 4rem);
+            }
+            .btn {
+                padding: 0.7rem 1.8rem;
+                font-size: 0.9rem;
+            }
+            .glitch-line {
+                width: 100px;
+            }
+            .eye-icon {
+                font-size: 2.5rem;
+            }
+            /* разрешаем заголовку переноситься, если совсем не влезает, но с нормальным видом */
+            .main-title {
+                white-space: normal;
+                word-break: break-word;
+                line-height: 1.2;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scene--poster, .scene--downfall, .scene--flashback {
+                background-position: top;
+            }
+            .content {
+                padding: 1rem;
+            }
+            h2 {
+                font-size: clamp(1.5rem, 12vw, 3rem);
+            }
+            .tag-text {
+                font-size: 2rem;
+            }
+            .body-text {
+                font-size: 1rem;
+            }
+            .btn {
+                padding: 0.6rem 1.5rem;
+                font-size: 0.8rem;
+            }
+            .glitch-line {
+                width: 80px;
+            }
+            .eye-icon {
+                font-size: 2rem;
+            }
+            /* Логотип ещё уменьшим */
+            .logo {
+                transform: scale(0.7);
+                top: 0.5rem;
+                left: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Логотип (текст будет полностью формироваться JS-анимацией) -->
+    <!-- Логотип (иконка + текст без "_") -->
     <a href="#" class="logo">
         <img src="https://qfoldit.github.io/assets/qTrminal.svg" alt="qTrminal icon" class="logo-icon">
         <span class="logo-text" id="logoText"></span>
     </a>
 
     <div class="story-container" id="storyContainer">
+        <!-- СЦЕНА 1: ГЛАВНЫЙ ЭКРАН -->
         <section class="scene scene--poster active" data-index="0">
             <div class="content">
-                <h2 class="code-text" style="font-size: clamp(3.5rem, 11vw, 7.5rem); margin:0.4rem 0; text-shadow: 0 0 30px #00f0ff;">HARD RESET</h2>
+                <h2 class="code-text main-title" style="font-size: clamp(2.5rem, 12vw, 6rem); margin:0.4rem 0; text-shadow: 0 0 30px #00f0ff;">HARD RESET</h2>
                 <div class="glitch-line"></div>
                 <p class="body-text" style="max-width: 650px; margin: 0 auto; font-size: 1.4rem;">
                     Четыре айтишника, выброшенные индустрией.<br>
@@ -296,6 +375,7 @@
             </div>
         </section>
 
+        <!-- СЦЕНА 2: УВОЛЬНЕНИЕ -->
         <section class="scene scene--downfall" data-index="1">
             <div class="content">
                 <span class="tag-text">уволены</span>
@@ -311,6 +391,7 @@
             </div>
         </section>
 
+        <!-- СЦЕНА 3: ЦИФРОВОЙ ЛЮКС -->
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
                 <span class="tag-text" style="font-size:2.5rem;">web3 • сингапур • майами</span>
@@ -323,6 +404,7 @@
             </div>
         </section>
 
+        <!-- СЦЕНА 4: ФИНАЛЬНЫЙ ТИЗЕР -->
         <section class="scene scene--finale" data-index="3">
             <div class="content">
                 <span class="eye-icon">⌬</span>
@@ -344,12 +426,11 @@
 
     <script>
         (function() {
-            // ---------- BRUTE FORCE LOGO ANIMATION ----------
-            const targetString = "system restore initiated_";
+            // ---------- BRUTE FORCE LOGO ANIMATION (без "_") ----------
+            const targetString = "system restore initiated"; // убран символ "_"
             const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
             const logoTextEl = document.getElementById('logoText');
             
-            // Создаем массив span с символами и курсором
             function buildLogoSpans() {
                 logoTextEl.innerHTML = '';
                 for (let i = 0; i < targetString.length; i++) {
@@ -360,32 +441,25 @@
                     span.dataset.index = i;
                     logoTextEl.appendChild(span);
                 }
-                // добавляем мигающий курсор отдельно (уже не как символ подчеркивания)
-                const cursorSpan = document.createElement('span');
-                cursorSpan.className = 'cursor-blink';
-                cursorSpan.textContent = '_';
-                logoTextEl.appendChild(cursorSpan);
+                // курсор не добавляем, так как "_" убран
             }
 
-            // Функция brute-force раскрытия символов
             function bruteForceReveal() {
                 const spans = logoTextEl.querySelectorAll('.brute-char');
                 const total = spans.length;
-                // случайный порядок индексов для асимметрии
                 const indices = Array.from({ length: total }, (_, i) => i);
-                // перемешиваем
+                // асимметричный порядок
                 for (let i = indices.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [indices[i], indices[j]] = [indices[j], indices[i]];
                 }
 
-                indices.forEach((originalIndex, order) => {
-                    const delay = originalIndex * 0.08 + Math.random() * 0.2; // асимметричный тайминг
+                indices.forEach((originalIndex) => {
+                    const delay = originalIndex * 0.08 + Math.random() * 0.2;
                     const span = spans[originalIndex];
                     const targetChar = span.dataset.target;
 
                     setTimeout(() => {
-                        // запускаем цикл случайных смен символов перед остановкой на целевом
                         let iterations = 0;
                         const maxIter = 8 + Math.floor(Math.random() * 10);
                         const interval = setInterval(() => {
@@ -394,7 +468,6 @@
                             if (iterations >= maxIter) {
                                 clearInterval(interval);
                                 span.textContent = targetChar;
-                                // добавляем эффект глитча при раскрытии
                                 span.style.color = 'var(--magenta)';
                                 setTimeout(() => {
                                     span.style.color = 'var(--cyan)';
@@ -403,23 +476,17 @@
                         }, 40);
                     }, delay * 1000);
                 });
-
-                // когда все символы раскрыты (примерно через максимальную задержку + время итераций), курсор продолжает мигать
-                const maxDelay = (total - 1) * 0.08 + 0.2 + 0.6; // примерно
-                setTimeout(() => {
-                    // курсор уже мигает, ничего не делаем
-                }, maxDelay * 1000);
             }
 
             buildLogoSpans();
             setTimeout(bruteForceReveal, 300);
 
-            // ---------- СКРОЛЛ-ЛОГИКА И АНИМАЦИЯ ТЕКСТА СЦЕН (СОХРАНЕНО) ----------
+            // ---------- СКРОЛЛ-ЛОГИКА И АНИМАЦИЯ ТЕКСТА СЦЕН ----------
             const container = document.getElementById('storyContainer');
             const scenes = document.querySelectorAll('.scene');
 
             function animateTextNodes(rootElement) {
-                const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn), .tag-text, .code-text');
+                const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn):not(.brute-char), .tag-text, .code-text');
                 textElements.forEach(el => {
                     if (el.classList.contains('animated-text')) return;
                     if (!el.textContent.trim()) return;
@@ -498,7 +565,7 @@
                 setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset: brute force logo animation active. System restored.');
+            console.log('Hard Reset: logo "system restore initiated" without underscore. Mobile optimizations applied.');
         })();
     </script>
 </body>
