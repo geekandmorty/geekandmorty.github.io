@@ -351,6 +351,7 @@
             }
             h2 {
                 font-size: clamp(1.8rem, 9vw, 3.5rem);
+                white-space: normal;
             }
             .tag-text {
                 font-size: clamp(2rem, 7vw, 3rem);
@@ -446,7 +447,7 @@
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
                 <span class="tag-text">web3 • сингапур • майами</span>
-                <h2 class="code-text">sudo remember --all</h2>
+                <h2 class="code-text">sudo remember<br>--all</h2>
                 <p class="body-text">
                     Частные джеты, бассейны на крышах, обещания «дизраптнуть» реальность.<br>
                     Теперь это лишь <span class="highlight">битые ссылки</span> в их резюме.<br>
@@ -644,7 +645,7 @@
                 setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset: typography harmonized.');
+            console.log('Hard Reset: --all moved to next line.');
         })();
     </script>
 </body>
