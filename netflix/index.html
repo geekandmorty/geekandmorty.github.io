@@ -186,21 +186,42 @@
             background: rgba(0, 0, 0, 0.45);
         }
 
+        /* Общий контейнер контента с чёткой типографикой */
         .content {
             position: relative;
             z-index: 2;
             text-align: center;
             width: 100%;
-            max-width: 900px;
-            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
             opacity: 0;
             transform: translateY(25px);
             transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-            word-break: break-word;
         }
         .scene.active .content {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Элементы внутри контента: вертикальный ритм */
+        .content > * {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .content > * + * {
+            margin-top: 1.2rem;
+        }
+        .content > .glitch-line {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .content > .btn {
+            margin-top: 2rem;
+        }
+        .content > .eye-icon {
+            margin-top: 0;
+            margin-bottom: 0.8rem;
         }
 
         .code-text {
@@ -212,23 +233,24 @@
         .tag-text {
             font-family: 'Road Rage', cursive;
             color: var(--magenta);
-            font-size: 3.5rem;
+            font-size: clamp(2.5rem, 8vw, 3.5rem);
             line-height: 1.1;
-            margin-bottom: 0.25rem;
             text-shadow: 0 0 15px rgba(255, 0, 200, 0.6);
+            max-width: 100%;
+            word-break: break-word;
         }
         .body-text {
             font-family: 'Inter', sans-serif;
             color: #e0e0e0;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             line-height: 1.6;
+            max-width: 600px;
         }
         .highlight {
             color: var(--cyan);
             font-weight: 600;
         }
 
-        /* Пульсирующий розовый неон */
         .pulse-magenta {
             display: inline-block;
             color: var(--magenta);
@@ -247,10 +269,14 @@
         }
 
         h2 {
-            font-size: clamp(2rem, 8vw, 6rem);
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: clamp(2rem, 8vw, 5rem);
+            line-height: 1.2;
             margin-bottom: 0.5rem;
             white-space: nowrap;
-            overflow-wrap: break-word;
         }
         .main-title {
             white-space: nowrap;
@@ -269,10 +295,8 @@
             font-weight: 700;
             transition: all 0.3s ease;
             background: rgba(0, 240, 255, 0.05);
-            margin-top: 1.8rem;
-            position: relative;
-            z-index: 5;
             white-space: nowrap;
+            z-index: 5;
         }
         .btn:hover {
             background: var(--cyan);
@@ -284,15 +308,16 @@
             width: 140px;
             height: 2px;
             background: var(--magenta);
-            margin: 1.3rem auto;
             box-shadow: 0 0 10px var(--magenta);
         }
         .eye-icon {
             font-size: 3.2rem;
-            margin-bottom: 0.8rem;
             display: block;
+            color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan);
         }
 
+        /* Анимация символов */
         .char-animate {
             display: inline-block;
             opacity: 0;
@@ -315,26 +340,68 @@
             100% { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
         }
 
+        /* Адаптивность */
         @media (max-width: 768px) {
-            .tag-text { font-size: 2.5rem; }
-            .body-text { font-size: 1.1rem; }
-            h2 { font-size: clamp(1.8rem, 10vw, 4rem); }
-            .btn { padding: 0.7rem 1.8rem; font-size: 0.9rem; }
-            .glitch-line { width: 100px; }
-            .eye-icon { font-size: 2.5rem; }
-            .main-title { white-space: normal; word-break: break-word; line-height: 1.2; }
+            .content {
+                padding: 1.2rem 1.5rem;
+            }
+            .body-text {
+                font-size: 1.1rem;
+                max-width: 100%;
+            }
+            h2 {
+                font-size: clamp(1.8rem, 9vw, 3.5rem);
+            }
+            .tag-text {
+                font-size: clamp(2rem, 7vw, 3rem);
+            }
+            .btn {
+                padding: 0.7rem 1.8rem;
+                font-size: 0.9rem;
+            }
+            .glitch-line {
+                width: 100px;
+            }
+            .eye-icon {
+                font-size: 2.5rem;
+            }
+            .main-title {
+                white-space: normal;
+                word-break: break-word;
+            }
         }
 
         @media (max-width: 480px) {
-            .scene--poster, .scene--downfall, .scene--flashback { background-position: top; }
-            .content { padding: 1rem; }
-            h2 { font-size: clamp(1.5rem, 12vw, 3rem); }
-            .tag-text { font-size: 2rem; }
-            .body-text { font-size: 1rem; }
-            .btn { padding: 0.6rem 1.5rem; font-size: 0.8rem; }
-            .glitch-line { width: 80px; }
-            .eye-icon { font-size: 2rem; }
-            .logo { transform: scale(0.7); top: 0.5rem; left: 0.5rem; }
+            .scene--poster, .scene--downfall, .scene--flashback {
+                background-position: top;
+            }
+            .content {
+                padding: 1rem;
+            }
+            h2 {
+                font-size: clamp(1.6rem, 10vw, 2.8rem);
+            }
+            .tag-text {
+                font-size: 1.8rem;
+            }
+            .body-text {
+                font-size: 1rem;
+            }
+            .btn {
+                padding: 0.6rem 1.5rem;
+                font-size: 0.8rem;
+            }
+            .glitch-line {
+                width: 80px;
+            }
+            .eye-icon {
+                font-size: 2rem;
+            }
+            .logo {
+                transform: scale(0.7);
+                top: 0.5rem;
+                left: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -345,11 +412,12 @@
     </a>
 
     <div class="story-container" id="storyContainer">
+        <!-- Сцена 1 -->
         <section class="scene scene--poster active" data-index="0">
             <div class="content">
-                <h2 class="code-text main-title" id="mainTitle" style="font-size: clamp(2.5rem, 12vw, 6rem); margin:0.4rem 0; text-shadow: 0 0 30px #00f0ff;"></h2>
+                <h2 class="code-text main-title" id="mainTitle" style="text-shadow: 0 0 30px #00f0ff;"></h2>
                 <div class="glitch-line"></div>
-                <p class="body-text" style="max-width: 650px; margin: 0 auto; font-size: 1.4rem;">
+                <p class="body-text">
                     Четыре айтишника, выброшенные индустрией.<br>
                     Одна последняя сделка.<br>
                     <span class="highlight pulse-magenta">Их код изменит всё.</span>
@@ -358,26 +426,28 @@
             </div>
         </section>
 
+        <!-- Сцена 2 -->
         <section class="scene scene--downfall" data-index="1">
             <div class="content">
                 <span class="tag-text">уволены</span>
                 <h2 class="code-text">pink_slip.txt</h2>
-                <p class="body-text" style="margin-top:1.2rem;">
+                <p class="body-text">
                     Алгоритмы вынесли вердикт раньше, чем HR проснулся.<br>
                     Тысячи специалистов стали <span class="highlight">цифровыми призраками</span>.<br>
                     Их опыт списали в утиль.
                 </p>
-                <p class="body-text" style="font-style:italic; margin-top:1.5rem; color:#b0b0b0;">
+                <p class="body-text" style="font-style:italic; color:#b0b0b0;">
                     «Тебя заменили твоим же кодом. Ирония, да?»
                 </p>
             </div>
         </section>
 
+        <!-- Сцена 3 -->
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
-                <span class="tag-text" style="font-size:2.5rem;">web3 • сингапур • майами</span>
+                <span class="tag-text">web3 • сингапур • майами</span>
                 <h2 class="code-text">sudo remember --all</h2>
-                <p class="body-text" style="margin-top:1.2rem;">
+                <p class="body-text">
                     Частные джеты, бассейны на крышах, обещания «дизраптнуть» реальность.<br>
                     Теперь это лишь <span class="highlight">битые ссылки</span> в их резюме.<br>
                     Но кое-что осталось: доступы, ключи, секретные схемы.
@@ -385,18 +455,19 @@
             </div>
         </section>
 
+        <!-- Сцена 4 -->
         <section class="scene scene--finale" data-index="3">
             <div class="content">
                 <span class="eye-icon">⌬</span>
-                <h2 class="code-text" style="font-size: clamp(2.5rem, 7vw, 4rem);">assemble_team.exe</h2>
+                <h2 class="code-text">assemble_team.exe</h2>
                 <div class="glitch-line" style="background:var(--cyan); box-shadow:0 0 10px var(--cyan);"></div>
                 <p class="body-text">
-                    <span class="highlight">Макс</span> — Падший CEO. <br>
-                    <span class="highlight">Анна</span> — Кибер-параноик. <br>
-                    <span class="highlight">Дмитрий</span> — Гений данных. <br>
+                    <span class="highlight">Макс</span> — Падший CEO.<br>
+                    <span class="highlight">Анна</span> — Кибер-параноик.<br>
+                    <span class="highlight">Дмитрий</span> — Гений данных.<br>
                     <span class="highlight">Шпунтик</span> — Железо.
                 </p>
-                <p class="body-text" style="margin-top:1.2rem; font-size:1.2rem;">
+                <p class="body-text" style="font-size:1.2rem;">
                     Они не стали друзьями. Они стали <span class="highlight">идеальным преступным механизмом</span>.
                 </p>
                 <a href="#" class="btn" style="border-color:var(--magenta); color:var(--magenta);">🔥 Скоро на Netflix</a>
@@ -573,7 +644,7 @@
                 setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset: neon pulse added to key phrase.');
+            console.log('Hard Reset: typography harmonized.');
         })();
     </script>
 </body>
