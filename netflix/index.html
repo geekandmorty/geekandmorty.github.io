@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hard Reset — Netflix Original Series</title>
-    <meta name="description" content="Четыре уволенных IT-специалиста объединяются, чтобы выжить в мире, который их выбросил. Криминальная трагикомедия о дружбе, коде и цифровом возмездии. Смотрим тизер.">
+    <meta name="description" content="Четыре уволенных IT-специалиста объединяются, чтобы выжить в мире, который их выбросил. Криминальная трагикомедия о дружбе, коде и цифровом возмездии.">
     <meta property="og:title" content="Hard Reset — Original Netflix Series">
     <meta property="og:description" content="У них нет работы, но остались навыки, пароли и паяльники. Идеальный преступный механизм рождается из руин IT-индустрии.">
     <meta property="og:image" content="https://geekandmorty.github.io/img/hard_reset.png">
@@ -14,7 +14,7 @@
     <meta name="twitter:description" content="Четыре уволенных IT-специалиста строят теневую империю. Тизер уже доступен.">
     <meta name="twitter:image" content="https://geekandmorty.github.io/img/hard_reset.png">
     <link rel="icon" href="https://qfoldit.github.io/assets/qTrminal.svg" type="image/svg+xml">
-    <!-- Шрифты -->
+    <!-- Шрифты: Inter + JetBrains Mono + Road Rage -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=JetBrains+Mono:wght@400;700&family=Road+Rage&display=swap" rel="stylesheet">
@@ -29,40 +29,83 @@
             background: #0a0a0a;
             font-family: 'Inter', sans-serif;
             overflow: hidden;
+            --cyan: #00f0ff;
+            --magenta: #ff00c8;
+            --bg-dark: #0a0a0a;
+            --grid-color: rgba(0, 240, 255, 0.2);
         }
 
-        /* Логотип с текстом */
+        /* === ЛОГОТИП С Hi-Tech GRID И СКОШЕННЫМ УГЛОМ === */
         .logo {
             position: fixed;
-            top: 1.5rem;
+            top: 1.2rem;
             left: 1.5rem;
             z-index: 100;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
-            transition: opacity 0.3s ease;
+            gap: 0.7rem;
+            padding: 0.5rem 1.2rem 0.5rem 0.5rem;
+            background: #0a0a0a;
+            clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 0% 100%);
             text-decoration: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            overflow: hidden;
         }
+
+        .logo::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.4;
+            z-index: 0;
+            clip-path: inherit;
+        }
+
+        .logo::after {
+            content: "";
+            position: absolute;
+            right: -2px;
+            bottom: 0;
+            width: 15%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(0, 240, 255, 0.15));
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            z-index: 1;
+        }
+
         .logo:hover {
-            opacity: 0.8;
+            opacity: 0.9;
         }
+
         .logo-icon {
             width: 46px;
             height: auto;
             display: block;
-        }
-        .logo-text {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #00f0ff;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            white-space: nowrap;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 6px var(--cyan));
         }
 
-        /* Скролл-контейнер */
+        .logo-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 1.8px;
+            text-transform: lowercase;
+            white-space: nowrap;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
+        }
+
+        /* === СКРОЛЛ-КОНТЕЙНЕР === */
         .story-container {
             height: 100vh;
             width: 100%;
@@ -75,7 +118,7 @@
             display: none;
         }
 
-        /* Сцена */
+        /* === СЦЕНА === */
         .scene {
             height: 100vh;
             width: 100%;
@@ -104,7 +147,7 @@
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
         }
 
-        /* Затемнение */
+        /* Затемняющий слой */
         .scene::after {
             content: '';
             position: absolute;
@@ -116,7 +159,7 @@
             background: rgba(0, 0, 0, 0.45);
         }
 
-        /* Контент */
+        /* Контент сцены */
         .content {
             position: relative;
             z-index: 2;
@@ -124,50 +167,50 @@
             max-width: 900px;
             padding: 2rem;
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            transform: translateY(25px);
+            transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .scene.active .content {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Типографика */
+        /* === ТИПОГРАФИКА (все текстовые блоки будут анимированы через JS) === */
         .code-text {
             font-family: 'JetBrains Mono', monospace;
-            color: #00f0ff;
+            color: var(--cyan);
             letter-spacing: 2px;
             text-transform: uppercase;
         }
         .tag-text {
             font-family: 'Road Rage', cursive;
-            color: #ff00c8;
+            color: var(--magenta);
             font-size: 3.5rem;
-            line-height: 1;
+            line-height: 1.1;
             margin-bottom: 0.25rem;
-            text-shadow: 0 0 15px rgba(255, 0, 200, 0.7);
+            text-shadow: 0 0 15px rgba(255, 0, 200, 0.6);
         }
         .body-text {
             font-family: 'Inter', sans-serif;
             color: #e0e0e0;
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             line-height: 1.6;
         }
         .highlight {
-            color: #00f0ff;
+            color: var(--cyan);
             font-weight: 600;
         }
 
         h2 {
-            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-size: clamp(2.8rem, 9vw, 6rem);
             margin-bottom: 0.5rem;
         }
 
         .btn {
             display: inline-block;
-            padding: 0.85rem 2.2rem;
-            border: 2px solid #00f0ff;
-            color: #00f0ff;
+            padding: 0.85rem 2.3rem;
+            border: 2px solid var(--cyan);
+            color: var(--cyan);
             font-family: 'JetBrains Mono', monospace;
             text-decoration: none;
             text-transform: uppercase;
@@ -175,40 +218,66 @@
             font-weight: 700;
             transition: all 0.3s ease;
             background: rgba(0, 240, 255, 0.05);
-            margin-top: 1.5rem;
+            margin-top: 1.8rem;
+            position: relative;
+            z-index: 5;
         }
         .btn:hover {
-            background: #00f0ff;
+            background: var(--cyan);
             color: #0a0a0a;
-            box-shadow: 0 0 20px #00f0ff;
+            box-shadow: 0 0 22px var(--cyan);
         }
 
         .glitch-line {
-            width: 150px;
+            width: 140px;
             height: 2px;
-            background: #ff00c8;
-            margin: 1.5rem auto;
-            box-shadow: 0 0 8px #ff00c8;
+            background: var(--magenta);
+            margin: 1.3rem auto;
+            box-shadow: 0 0 10px var(--magenta);
         }
         .eye-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            font-size: 3.2rem;
+            margin-bottom: 0.8rem;
             display: block;
+        }
+
+        /* Анимированные символы — базовое состояние до старта */
+        .char-animate {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(4px);
+            transform: translateY(6px) scale(0.9);
+            transition: opacity 0.25s ease, filter 0.35s ease, transform 0.3s ease;
+        }
+        .char-animate.revealed {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0) scale(1);
+        }
+
+        /* Дополнительный глитч-эффект для отдельных символов (будет добавляться случайно) */
+        .char-glitch {
+            animation: charGlitch 0.2s ease forwards;
+        }
+        @keyframes charGlitch {
+            0% { color: var(--cyan); text-shadow: 2px 0 red, -2px 0 blue; }
+            50% { color: var(--magenta); text-shadow: -2px 0 red, 2px 0 blue; }
+            100% { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
         }
     </style>
 </head>
 <body>
-    <!-- Логотип (иконка + текст "> system restore initiated_") -->
+    <!-- Логотип (без символа ">") -->
     <a href="#" class="logo">
         <img src="https://qfoldit.github.io/assets/qTrminal.svg" alt="qTrminal icon" class="logo-icon">
-        <span class="logo-text">> system restore initiated_</span>
+        <span class="logo-text">system restore initiated_</span>
     </a>
 
     <div class="story-container" id="storyContainer">
-        <!-- СЦЕНА 1: ГЛАВНЫЙ ЭКРАН (без строки "> system restore initiated_") -->
+        <!-- СЦЕНА 1: ГЛАВНЫЙ HERO -->
         <section class="scene scene--poster active" data-index="0">
             <div class="content">
-                <h2 class="code-text" style="font-size: clamp(3rem, 10vw, 7rem); margin:0.5rem 0; text-shadow: 0 0 25px #00f0ff;">HARD RESET</h2>
+                <h2 class="code-text" style="font-size: clamp(3.5rem, 11vw, 7.5rem); margin:0.4rem 0; text-shadow: 0 0 30px #00f0ff;">HARD RESET</h2>
                 <div class="glitch-line"></div>
                 <p class="body-text" style="max-width: 650px; margin: 0 auto; font-size: 1.4rem;">
                     Четыре айтишника, выброшенные индустрией.<br>
@@ -219,28 +288,28 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 2: УВОЛЬНЕНИЕ -->
+        <!-- СЦЕНА 2: ПАДЕНИЕ / УВОЛЬНЕНИЕ -->
         <section class="scene scene--downfall" data-index="1">
             <div class="content">
                 <span class="tag-text">уволены</span>
-                <h2 class="code-text">> pink_slip.txt</h2>
-                <p class="body-text" style="margin-top:1rem;">
+                <h2 class="code-text">pink_slip.txt</h2>
+                <p class="body-text" style="margin-top:1.2rem;">
                     Алгоритмы вынесли вердикт раньше, чем HR проснулся.<br>
                     Тысячи специалистов стали <span class="highlight">цифровыми призраками</span>.<br>
                     Их опыт списали в утиль.
                 </p>
-                <p class="body-text" style="font-style:italic; margin-top:1.5rem; color:#999;">
+                <p class="body-text" style="font-style:italic; margin-top:1.5rem; color:#b0b0b0;">
                     «Тебя заменили твоим же кодом. Ирония, да?»
                 </p>
             </div>
         </section>
 
-        <!-- СЦЕНА 3: ЦИФРОВОЙ ЛЮКС -->
+        <!-- СЦЕНА 3: ЦИФРОВОЙ ЛЮКС / ВОСПОМИНАНИЯ -->
         <section class="scene scene--flashback" data-index="2">
             <div class="content">
                 <span class="tag-text" style="font-size:2.5rem;">web3 • сингапур • майами</span>
-                <h2 class="code-text">> sudo remember --all</h2>
-                <p class="body-text" style="margin-top:1rem;">
+                <h2 class="code-text">sudo remember --all</h2>
+                <p class="body-text" style="margin-top:1.2rem;">
                     Частные джеты, бассейны на крышах, обещания «дизраптнуть» реальность.<br>
                     Теперь это лишь <span class="highlight">битые ссылки</span> в их резюме.<br>
                     Но кое-что осталось: доступы, ключи, секретные схемы.
@@ -248,23 +317,22 @@
             </div>
         </section>
 
-        <!-- СЦЕНА 4: ФИНАЛЬНЫЙ ТИЗЕР -->
+        <!-- СЦЕНА 4: ФИНАЛЬНЫЙ ТИЗЕР / СБОР КОМАНДЫ -->
         <section class="scene scene--finale" data-index="3">
             <div class="content">
                 <span class="eye-icon">⌬</span>
-                <h2 class="code-text" style="font-size: clamp(2.5rem, 7vw, 4rem);">> assemble_team.exe</h2>
-                <div class="glitch-line" style="background:#00f0ff; box-shadow:0 0 8px #00f0ff;"></div>
+                <h2 class="code-text" style="font-size: clamp(2.5rem, 7vw, 4rem);">assemble_team.exe</h2>
+                <div class="glitch-line" style="background:var(--cyan); box-shadow:0 0 10px var(--cyan);"></div>
                 <p class="body-text">
                     <span class="highlight">Макс</span> — Падший CEO. <br>
                     <span class="highlight">Анна</span> — Кибер-параноик. <br>
                     <span class="highlight">Дмитрий</span> — Гений данных. <br>
                     <span class="highlight">Шпунтик</span> — Железо.
                 </p>
-                <p class="body-text" style="margin-top:1rem; font-size:1.1rem;">
+                <p class="body-text" style="margin-top:1.2rem; font-size:1.2rem;">
                     Они не стали друзьями. Они стали <span class="highlight">идеальным преступным механизмом</span>.
                 </p>
-                <a href="#" class="btn" style="border-color:#ff00c8; color:#ff00c8;">🔥 Скоро на Netflix</a>
-                <p style="margin-top:2rem; font-size:0.8rem; color:#555;">(второй ключевой арт загружается...)</p>
+                <a href="#" class="btn" style="border-color:var(--magenta); color:var(--magenta);">🔥 Скоро на Netflix</a>
             </div>
         </section>
     </div>
@@ -273,31 +341,114 @@
         (function() {
             const container = document.getElementById('storyContainer');
             const scenes = document.querySelectorAll('.scene');
-            
+
+            // ---------- АСИММЕТРИЧНАЯ АНИМАЦИЯ ТЕКСТА (CRYPTO/ENCRYPT/DECRYPT EFFECT) ----------
+            function animateTextNodes(rootElement) {
+                // Находим все текстовые блоки внутри контента сцены, исключая кнопки (у них свой стиль)
+                const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn), .tag-text, .code-text');
+                
+                textElements.forEach(el => {
+                    // Пропускаем элементы, которые уже обработаны или не содержат текста
+                    if (el.classList.contains('animated-text')) return;
+                    if (!el.textContent.trim()) return;
+                    
+                    el.classList.add('animated-text');
+                    
+                    // Извлекаем текстовые узлы и заменяем их на span.char-animate
+                    const childNodes = Array.from(el.childNodes);
+                    childNodes.forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                            const fragment = document.createDocumentFragment();
+                            const chars = node.textContent.split('');
+                            chars.forEach((char, index) => {
+                                const span = document.createElement('span');
+                                span.className = 'char-animate';
+                                span.textContent = char === ' ' ? '\u00A0' : char; // неразрывный пробел для визуального пробела
+                                span.style.transitionDelay = `${Math.random() * 0.6 + index * 0.03}s`; // асимметричный тайминг
+                                fragment.appendChild(span);
+                            });
+                            node.replaceWith(fragment);
+                        } else if (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains('char-animate')) {
+                            // Рекурсивно обрабатываем вложенные элементы (например, span.highlight)
+                            animateTextNodes(node);
+                        }
+                    });
+                });
+            }
+
+            // Функция раскрытия символов (reveal) с асимметрией и случайными глитчами
+            function revealCharacters(containerElement) {
+                const chars = containerElement.querySelectorAll('.char-animate:not(.revealed)');
+                if (chars.length === 0) return;
+                
+                // Перемешиваем индексы для асимметричного появления
+                const indices = Array.from({ length: chars.length }, (_, i) => i);
+                // Сортируем с элементами случайности, но сохраняя общий порядок для читаемости
+                indices.sort((a, b) => (a + Math.random() * 0.5) - (b + Math.random() * 0.5));
+                
+                indices.forEach((originalIndex, order) => {
+                    const span = chars[originalIndex];
+                    const baseDelay = originalIndex * 0.04; // базовая задержка по порядку
+                    const randomOffset = Math.random() * 0.4; // случайный сдвиг до 0.4с
+                    const totalDelay = baseDelay + randomOffset;
+                    
+                    setTimeout(() => {
+                        span.classList.add('revealed');
+                        
+                        // Случайный глитч-эффект для 15% символов
+                        if (Math.random() < 0.15) {
+                            span.classList.add('char-glitch');
+                            setTimeout(() => span.classList.remove('char-glitch'), 250);
+                        }
+                    }, totalDelay * 1000);
+                });
+            }
+
+            // Инициализация анимации для конкретной сцены
+            function initSceneAnimation(scene) {
+                const content = scene.querySelector('.content');
+                if (!content) return;
+                // Сначала анимируем текстовые узлы (разбиваем на символы)
+                animateTextNodes(content);
+                // Затем запускаем reveal с небольшой задержкой, чтобы DOM обновился
+                setTimeout(() => revealCharacters(content), 50);
+            }
+
+            // ---------- УПРАВЛЕНИЕ АКТИВНОЙ СЦЕНОЙ И СКРОЛЛОМ ----------
             function updateActiveScene() {
                 const scrollTop = container.scrollTop;
                 const windowHeight = window.innerHeight;
-                
                 const activeIndex = Math.round(scrollTop / windowHeight);
                 
+                let sceneActivated = false;
                 scenes.forEach((scene, idx) => {
                     if (idx === activeIndex) {
-                        scene.classList.add('active');
+                        if (!scene.classList.contains('active')) {
+                            scene.classList.add('active');
+                            // Запускаем анимацию текста при первой активации
+                            initSceneAnimation(scene);
+                            sceneActivated = true;
+                        }
                     } else {
                         scene.classList.remove('active');
                     }
                 });
             }
 
+            // Первичная инициализация для уже активной сцены
+            const initialActive = document.querySelector('.scene.active');
+            if (initialActive) {
+                initSceneAnimation(initialActive);
+            }
+            
             updateActiveScene();
 
             container.addEventListener('scroll', updateActiveScene, { passive: true });
-
             window.addEventListener('resize', () => {
-                setTimeout(updateActiveScene, 50);
+                setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset Hero ready. Second key art slot open...');
+            console.log('Hard Reset: crypto/decrypt text animation active. System restored.');
         })();
     </script>
 </body>
