@@ -34,7 +34,6 @@
             --grid-color: rgba(0, 240, 255, 0.2);
         }
 
-        /* === ЛОГОТИП С Hi-Tech GRID И СКОШЕННЫМ УГЛОМ === */
         .logo {
             position: fixed;
             top: 1.2rem;
@@ -103,7 +102,6 @@
             text-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
         }
 
-        /* курсор мигающий */
         .cursor-blink {
             display: inline-block;
             animation: blink 0.8s step-end infinite;
@@ -115,13 +113,11 @@
             50% { opacity: 0; }
         }
 
-        /* стили для отдельных символов брутфорса */
         .brute-char {
             display: inline-block;
             transition: color 0.1s ease;
         }
 
-        /* Адаптивный логотип для маленьких экранов */
         @media (max-width: 600px) {
             .logo {
                 top: 0.8rem;
@@ -139,7 +135,6 @@
             }
         }
 
-        /* === СКРОЛЛ-КОНТЕЙНЕР === */
         .story-container {
             height: 100vh;
             width: 100%;
@@ -152,7 +147,6 @@
             display: none;
         }
 
-        /* === СЦЕНА === */
         .scene {
             height: 100vh;
             width: 100%;
@@ -208,7 +202,6 @@
             transform: translateY(0);
         }
 
-        /* Типографика */
         .code-text {
             font-family: 'JetBrains Mono', monospace;
             color: var(--cyan);
@@ -303,65 +296,26 @@
             100% { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
         }
 
-        /* ========== АДАПТИВНОСТЬ ========== */
         @media (max-width: 768px) {
-            .tag-text {
-                font-size: 2.5rem;
-            }
-            .body-text {
-                font-size: 1.1rem;
-            }
-            h2 {
-                font-size: clamp(1.8rem, 10vw, 4rem);
-            }
-            .btn {
-                padding: 0.7rem 1.8rem;
-                font-size: 0.9rem;
-            }
-            .glitch-line {
-                width: 100px;
-            }
-            .eye-icon {
-                font-size: 2.5rem;
-            }
-            .main-title {
-                white-space: normal;
-                word-break: break-word;
-                line-height: 1.2;
-            }
+            .tag-text { font-size: 2.5rem; }
+            .body-text { font-size: 1.1rem; }
+            h2 { font-size: clamp(1.8rem, 10vw, 4rem); }
+            .btn { padding: 0.7rem 1.8rem; font-size: 0.9rem; }
+            .glitch-line { width: 100px; }
+            .eye-icon { font-size: 2.5rem; }
+            .main-title { white-space: normal; word-break: break-word; line-height: 1.2; }
         }
 
         @media (max-width: 480px) {
-            .scene--poster, .scene--downfall, .scene--flashback {
-                background-position: top;
-            }
-            .content {
-                padding: 1rem;
-            }
-            h2 {
-                font-size: clamp(1.5rem, 12vw, 3rem);
-            }
-            .tag-text {
-                font-size: 2rem;
-            }
-            .body-text {
-                font-size: 1rem;
-            }
-            .btn {
-                padding: 0.6rem 1.5rem;
-                font-size: 0.8rem;
-            }
-            .glitch-line {
-                width: 80px;
-            }
-            .eye-icon {
-                font-size: 2rem;
-            }
-            .logo {
-                transform: scale(0.7);
-                top: 0.5rem;
-                left: 0.5rem;
-            }
+            .scene--poster, .scene--downfall, .scene--flashback { background-position: top; }
+            .content { padding: 1rem; }
+            h2 { font-size: clamp(1.5rem, 12vw, 3rem); }
+            .tag-text { font-size: 2rem; }
+            .body-text { font-size: 1rem; }
+            .btn { padding: 0.6rem 1.5rem; font-size: 0.8rem; }
+            .glitch-line { width: 80px; }
+            .eye-icon { font-size: 2rem; }
+            .logo { transform: scale(0.7); top: 0.5rem; left: 0.5rem; }
         }
     </style>
 </head>
@@ -374,7 +328,7 @@
     <div class="story-container" id="storyContainer">
         <section class="scene scene--poster active" data-index="0">
             <div class="content">
-                <h2 class="code-text main-title" style="font-size: clamp(2.5rem, 12vw, 6rem); margin:0.4rem 0; text-shadow: 0 0 30px #00f0ff;">HARD RESET</h2>
+                <h2 class="code-text main-title" id="mainTitle" style="font-size: clamp(2.5rem, 12vw, 6rem); margin:0.4rem 0; text-shadow: 0 0 30px #00f0ff;"></h2>
                 <div class="glitch-line"></div>
                 <p class="body-text" style="max-width: 650px; margin: 0 auto; font-size: 1.4rem;">
                     Четыре айтишника, выброшенные индустрией.<br>
@@ -433,73 +387,104 @@
 
     <script>
         (function() {
-            const targetString = "system restore initiated";
-            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
-            const logoTextEl = document.getElementById('logoText');
-            
-            function buildLogoSpans() {
-                logoTextEl.innerHTML = '';
+            // Универсальная функция брутфорс-анимации с курсором-столбиком
+            function createBruteForceAnimation(containerElement, targetString, options = {}) {
+                const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
+                const {
+                    hideCursorOnMobile = false,
+                    initialDelay = 200
+                } = options;
+
+                containerElement.innerHTML = '';
+                const spans = [];
+
+                // Создаем span для каждого символа, пробел заменяем на неразрывный
                 for (let i = 0; i < targetString.length; i++) {
                     const span = document.createElement('span');
                     span.className = 'brute-char';
-                    span.style.opacity = '0'; // изначально невидимы
-                    span.textContent = targetString[i]; // сразу ставим правильный символ, но будем менять
-                    span.dataset.target = targetString[i];
-                    span.dataset.index = i;
-                    logoTextEl.appendChild(span);
+                    span.style.opacity = '0';
+                    const char = targetString[i];
+                    span.textContent = char === ' ' ? '\u00A0' : char; // пробел показываем
+                    span.dataset.target = char; // сохраняем исходный символ (может быть пробелом)
+                    containerElement.appendChild(span);
+                    spans.push(span);
                 }
-                // курсор
+
+                // Курсор в виде столбика
                 const cursorSpan = document.createElement('span');
                 cursorSpan.className = 'cursor-blink';
-                cursorSpan.textContent = '_';
-                logoTextEl.appendChild(cursorSpan);
-            }
+                cursorSpan.textContent = '█';
+                cursorSpan.style.display = 'none';
+                containerElement.appendChild(cursorSpan);
 
-            function bruteForceReveal() {
-                const spans = logoTextEl.querySelectorAll('.brute-char');
-                const total = spans.length;
-                let currentIndex = 0;
+                function revealNext(index) {
+                    if (index >= spans.length) {
+                        if (hideCursorOnMobile && window.innerWidth <= 768) {
+                            cursorSpan.style.display = 'none';
+                        }
+                        return;
+                    }
 
-                function revealNext() {
-                    if (currentIndex >= total) return;
-                    const span = spans[currentIndex];
-                    const targetChar = span.dataset.target;
-                    span.style.opacity = '1'; // делаем видимым
+                    const currentSpan = spans[index];
+                    currentSpan.after(cursorSpan);
+                    cursorSpan.style.display = 'inline';
+                    currentSpan.style.opacity = '1';
+
+                    const targetChar = currentSpan.dataset.target;
+
+                    // Если символ пробел — не брутим, сразу оставляем пробел
+                    if (targetChar === ' ') {
+                        currentSpan.textContent = '\u00A0';
+                        currentSpan.style.color = 'var(--cyan)';
+                        const nextDelay = 0.05 + Math.random() * 0.2;
+                        setTimeout(() => revealNext(index + 1), nextDelay * 1000);
+                        return;
+                    }
+
                     let iterations = 0;
                     const maxIter = 8 + Math.floor(Math.random() * 10);
                     const interval = setInterval(() => {
-                        span.textContent = characters[Math.floor(Math.random() * characters.length)];
+                        currentSpan.textContent = characters[Math.floor(Math.random() * characters.length)];
                         iterations++;
                         if (iterations >= maxIter) {
                             clearInterval(interval);
-                            span.textContent = targetChar;
-                            span.style.color = 'var(--magenta)';
+                            currentSpan.textContent = targetChar; // для обычных символов просто символ
+                            currentSpan.style.color = 'var(--magenta)';
                             setTimeout(() => {
-                                span.style.color = 'var(--cyan)';
+                                currentSpan.style.color = 'var(--cyan)';
                             }, 80);
-                            currentIndex++;
-                            // асимметричная задержка перед следующим символом
+
                             const nextDelay = 0.05 + Math.random() * 0.2;
-                            setTimeout(revealNext, nextDelay * 1000);
+                            setTimeout(() => revealNext(index + 1), nextDelay * 1000);
                         }
                     }, 40);
                 }
 
-                // небольшая начальная задержка
-                setTimeout(revealNext, 200);
+                setTimeout(() => revealNext(0), initialDelay);
             }
 
-            buildLogoSpans();
-            bruteForceReveal();
+            // Логотип с пробелами
+            const logoContainer = document.getElementById('logoText');
+            createBruteForceAnimation(logoContainer, "system restore initiated", {
+                hideCursorOnMobile: false,
+                initialDelay: 300
+            });
 
-            // ---------- СКРОЛЛ-ЛОГИКА ----------
+            // Заголовок HARD RESET с пробелом
+            const titleContainer = document.getElementById('mainTitle');
+            createBruteForceAnimation(titleContainer, "HARD RESET", {
+                hideCursorOnMobile: true,
+                initialDelay: 800
+            });
+
+            // ---------- Остальная анимация сцен ----------
             const container = document.getElementById('storyContainer');
             const scenes = document.querySelectorAll('.scene');
 
             function animateTextNodes(rootElement) {
                 const textElements = rootElement.querySelectorAll('h2, p, span:not(.char-animate):not(.btn):not(.brute-char):not(.cursor-blink), .tag-text, .code-text');
                 textElements.forEach(el => {
-                    if (el.classList.contains('animated-text')) return;
+                    if (el.classList.contains('animated-text') || el.id === 'mainTitle') return;
                     if (!el.textContent.trim()) return;
                     el.classList.add('animated-text');
                     const childNodes = Array.from(el.childNodes);
@@ -576,7 +561,7 @@
                 setTimeout(updateActiveScene, 60);
             });
 
-            console.log('Hard Reset: terminal-typewriter brute force logo active.');
+            console.log('Hard Reset: block cursor, fixed spaces.');
         })();
     </script>
 </body>
